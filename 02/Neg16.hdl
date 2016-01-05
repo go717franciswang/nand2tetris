@@ -1,0 +1,7 @@
+CHIP Neg16 {
+    IN in[16];
+    OUT ng;
+
+    PARTS:
+    And(a=true, b=in[15], out=ng);
+}
