@@ -5,20 +5,20 @@
 
 /**
  * The complete address space of the Hack computer's memory,
- * including RAM and memory-mapped I/O. 
+ * including RAM and memory-mapped I/O.
  * The chip facilitates read and write operations, as follows:
  *     Read:  out(t) = Memory[address(t)](t)
  *     Write: if load(t-1) then Memory[address(t-1)](t) = in(t-1)
- * In words: the chip always outputs the value stored at the memory 
- * location specified by address. If load==1, the in value is loaded 
- * into the memory location specified by address. This value becomes 
+ * In words: the chip always outputs the value stored at the memory
+ * location specified by address. If load==1, the in value is loaded
+ * into the memory location specified by address. This value becomes
  * available through the out output from the next time step onward.
  * Address space rules:
- * Only the upper 16K+8K+1 words of the Memory chip are used. 
- * Access to address>0x6000 is invalid. Access to any address in 
- * the range 0x4000-0x5FFF results in accessing the screen memory 
- * map. Access to address 0x6000 results in accessing the keyboard 
- * memory map. The behavior in these addresses is described in the 
+ * Only the upper 16K+8K+1 words of the Memory chip are used.
+ * Access to address>0x6000 is invalid. Access to any address in
+ * the range 0x4000-0x5FFF results in accessing the screen memory
+ * map. Access to address 0x6000 results in accessing the keyboard
+ * memory map. The behavior in these addresses is described in the
  * Screen and Keyboard chip specifications given in the book.
  */
 
@@ -27,5 +27,18 @@ CHIP Memory {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    Add16(a[0..14]=address, b[15]=true, b[14]=true, out[15]=IsM, out[0..12]=SAddress);
+    Add16(a[0..14]=address, b[15]=true, b[13]=true, out[15]=IsSOrM);
+
+    Not(in=IsM, out=NotM);
+    And(a=NotM, b=IsSOrM, out=IsS);
+    And(a=IsS, b=load, out=LoadS);
+    And(a=IsM, b=load, out=LoadM);
+
+    Screen(in=in, load=LoadS, address=SAddress, out=S);
+    Keyboard(out=K);
+    Mux16(a=K, b=S, sel=IsS, out=SK);
+
+    RAM16K(in=in, load=LoadM, address=address[0..13], out=M);
+    Mux16(a=SK, b=M, sel=IsM, out=out);
 }
