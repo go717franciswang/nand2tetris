@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
 def parse(line):
-    line = line.strip()
-    cmd = line.split('//')[0]
+    cmd = line.split('//')[0].strip()
     if cmd == '':
         return None
 
@@ -20,7 +19,10 @@ def parse(line):
         else:
             dest,comp = None,cmd
 
-        return {'type': 'C', 'comp': comp, 'dest': dest, 'jump': jmp}
+        return {'type': 'C', 
+                'comp': comp, 
+                'dest': dest, 
+                'jump': jmp}
 
 comp2abin = {
         '0':   '0101010',
@@ -45,6 +47,7 @@ comp2abin = {
         '!M':  '1110001',
         '-M':  '1110011',
         'M+1': '1110111',
+        'M-1': '1110010',
         'D+M': '1000010',
         'D-M': '1010011',
         'M-D': '1000111',
