@@ -18,20 +18,21 @@ def code(parsed):
         return '''
             @'''+parsed['value']+''' // store value in D
             D=A
-            @SP                      // access global stack
+            @SP   // access global stack
             A=M
-            M=D                      // push D onto stack
-            @SP                      // increment SP
+            M=D   // push D onto stack
+            @SP   // increment SP
             D=M+1
             @SP
             M=D'''
     elif cmd == 'add':
         return '''
-            @SP   // set D = *SP
-            A=M
-            D=M
-            @SP   // set *(SP-1) to *(SP-1) + *SP
+            @SP   // set D = *(SP-1)
             A=M-1
+            D=M
+            @SP   // set *(SP-2) to *(SP-2) + *(SP-1)
+            A=M-1
+            A=A-1
             M=D+M
             @SP   // decrement SP
             D=M-1
