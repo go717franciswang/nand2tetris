@@ -43,6 +43,13 @@ def get_mem_offset(segment, offset):
 def get_temp_label(value):
     return 'R'+str(int(parsed['value'])+5)
 
+def get_pointer_label(value):
+    value = int(value)
+    if value == 0:
+        return 'THIS'
+    elif value == 1:
+        return 'THAT'
+
 def code(parsed):
     cmd = parsed['cmd']
     codes = []
@@ -52,6 +59,9 @@ def code(parsed):
         elif parsed['segment'] == 'temp':
             label = get_temp_label(parsed['value'])
             codes += ['@'+label, 'D=M']
+        elif parsed['segment'] == 'pointer':
+            label = get_pointer_label(parsed['value'])
+            codes += ['@'+label, 'D=M']
         else:
             codes += get_mem_offset(parsed['segment'], parsed['value'])
             codes.append('D=M')
@@ -60,6 +70,9 @@ def code(parsed):
     elif cmd == 'pop':
         if parsed['segment'] == 'temp':
             label = get_temp_label(parsed['value'])
+            codes += ['@SP', 'A=M-1', 'D=M', '@'+label, 'M=D']
+        elif parsed['segment'] == 'pointer':
+            label = get_pointer_label(parsed['value'])
             codes += ['@SP', 'A=M-1', 'D=M', '@'+label, 'M=D']
         else:
             codes += get_mem_offset(parsed['segment'], parsed['value'])
