@@ -50,6 +50,9 @@ def get_pointer_label(value):
     elif value == 1:
         return 'THAT'
 
+def get_static_label(value):
+    return str(int(value)+16)
+
 def code(parsed):
     cmd = parsed['cmd']
     codes = []
@@ -62,6 +65,9 @@ def code(parsed):
         elif parsed['segment'] == 'pointer':
             label = get_pointer_label(parsed['value'])
             codes += ['@'+label, 'D=M']
+        elif parsed['segment'] == 'static':
+            label = get_static_label(parsed['value'])
+            codes += ['@'+label, 'D=M']
         else:
             codes += get_mem_offset(parsed['segment'], parsed['value'])
             codes.append('D=M')
@@ -73,6 +79,9 @@ def code(parsed):
             codes += ['@SP', 'A=M-1', 'D=M', '@'+label, 'M=D']
         elif parsed['segment'] == 'pointer':
             label = get_pointer_label(parsed['value'])
+            codes += ['@SP', 'A=M-1', 'D=M', '@'+label, 'M=D']
+        elif parsed['segment'] == 'static':
+            label = get_static_label(parsed['value'])
             codes += ['@SP', 'A=M-1', 'D=M', '@'+label, 'M=D']
         else:
             codes += get_mem_offset(parsed['segment'], parsed['value'])
