@@ -7,8 +7,9 @@ def parse(line):
 
     tokens = cmd.split(' ')
     if tokens[0] == 'push':
-        if tokens[1] == 'constant':
-            return {'cmd': 'push constant', 'value': tokens[2]}
+        return {'cmd': 'push', 'segment': tokens[1], 'value': tokens[2]}
+    elif tokens[0] == 'pop':
+        return {'cmd': 'pop', 'segment': tokens[1], 'value': tokens[2]}
     elif len(tokens) == 1:
         return {'cmd': tokens[0]}
 
@@ -18,6 +19,7 @@ snippets = {
         'D = *(SP-1)': ['@SP', 'A=M-1', 'D=M'],
         'M = *(SP-1)': ['@SP', 'A=M-1'],
         'M = *(SP-2)': ['@SP', 'A=M-1', 'A=A-1'],
+        '*SP = D': ['@SP', 'A=M', 'M=D'],
         }
 last_label_id = 0
 
@@ -27,16 +29,43 @@ def get_label_id():
     last_label_id += 1
     return lid
 
+segment2label = {
+        'local': 'LCL',
+        'argument': 'ARG',
+        'this': 'THIS',
+        'that': 'THAT',
+        }
+
+def get_mem_offset(segment, offset):
+    label = segment2label[segment]
+    return ['@'+str(offset), 'D=A', '@'+label, 'A=M+D']
+
+def get_temp_label(value):
+    return 'R'+str(int(parsed['value'])+5)
+
 def code(parsed):
     cmd = parsed['cmd']
     codes = []
-    if cmd == 'push constant':
-        codes += ['@'+parsed['value'], # store value in D
-                  'D=A',
-                  '@SP',   # access global stack
-                  'A=M',
-                  'M=D']   # push D onto stack
+    if cmd == 'push':
+        if parsed['segment'] == 'constant':
+            codes += ['@'+parsed['value'], 'D=A']
+        elif parsed['segment'] == 'temp':
+            label = get_temp_label(parsed['value'])
+            codes += ['@'+label, 'D=M']
+        else:
+            codes += get_mem_offset(parsed['segment'], parsed['value'])
+            codes.append('D=M')
+        codes += snippets['*SP = D']
         codes += snippets['increment SP']
+    elif cmd == 'pop':
+        if parsed['segment'] == 'temp':
+            label = get_temp_label(parsed['value'])
+            codes += ['@SP', 'A=M-1', 'D=M', '@'+label, 'M=D']
+        else:
+            codes += get_mem_offset(parsed['segment'], parsed['value'])
+            codes += ['D=A', '@R13', 'M=D'] # store segment offset address at R13
+            codes += ['@SP', 'A=M-1', 'D=M', '@R13', 'A=M', 'M=D']
+        codes += snippets['decrement SP']
     elif cmd == 'add':
         codes += snippets['D = *(SP-1)']
         codes += snippets['M = *(SP-2)']
