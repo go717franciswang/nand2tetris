@@ -6,12 +6,17 @@ def parse(line):
         return None
 
     tokens = cmd.split(' ')
-    if tokens[0] == 'push':
-        return {'cmd': 'push', 'segment': tokens[1], 'value': tokens[2]}
-    elif tokens[0] == 'pop':
-        return {'cmd': 'pop', 'segment': tokens[1], 'value': tokens[2]}
-    elif len(tokens) == 1:
-        return {'cmd': tokens[0]}
+    rs = {'cmd': tokens[0]}
+    if tokens[0] in ('push', 'pop'):
+        rs['segment'] = tokens[1]
+        rs['value'] = tokens[2]
+    elif tokens[0] in ('label', 'if-goto'):
+        rs['label'] = tokens[1]
+    elif tokens[0] in ('function', 'call'):
+        rs['name'] = tokens[1]
+        rs['argc'] = tokens[2]
+
+    return rs
 
 snippets = {
         'increment SP': ['@SP', 'D=M+1', '@SP', 'M=D'],
