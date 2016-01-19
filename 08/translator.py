@@ -138,6 +138,15 @@ def code(parsed):
         codes += snippets['M = *(SP-2)']
         codes.append('M=D|M')
         codes += snippets['decrement SP']
+    elif cmd == 'label':
+        codes.append('('+parsed['label']+')')
+    elif cmd == 'if-goto':
+        codes += snippets['D = *(SP-1)']
+        codes += ['@R13', 'M=D']
+        codes += snippets['decrement SP']
+        codes += ['@R13', 'D=M']
+        codes.append('@'+parsed['label'])
+        codes.append('D;JNE')
 
     return codes
 
