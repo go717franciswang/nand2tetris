@@ -10,7 +10,7 @@ def parse(line):
     if tokens[0] in ('push', 'pop'):
         rs['segment'] = tokens[1]
         rs['value'] = tokens[2]
-    elif tokens[0] in ('label', 'if-goto'):
+    elif tokens[0] in ('label', 'if-goto', 'goto'):
         rs['label'] = tokens[1]
     elif tokens[0] in ('function', 'call'):
         rs['name'] = tokens[1]
@@ -147,6 +147,8 @@ def code(parsed):
         codes += ['@R13', 'D=M']
         codes.append('@'+parsed['label'])
         codes.append('D;JNE')
+    elif cmd == 'goto':
+        codes += ['@'+parsed['label'], '0;JMP']
 
     return codes
 
