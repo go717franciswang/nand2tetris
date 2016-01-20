@@ -12,7 +12,10 @@ def parse(line):
         rs['value'] = tokens[2]
     elif tokens[0] in ('label', 'if-goto', 'goto'):
         rs['label'] = tokens[1]
-    elif tokens[0] in ('function', 'call'):
+    elif tokens[0] == 'function':
+        rs['name'] = tokens[1]
+        rs['lcl_count'] = tokens[2]
+    elif tokens[0] == 'call':
         rs['name'] = tokens[1]
         rs['argc'] = tokens[2]
 
@@ -149,6 +152,20 @@ def code(parsed):
         codes.append('D;JNE')
     elif cmd == 'goto':
         codes += ['@'+parsed['label'], '0;JMP']
+    elif cmd == 'function':
+        codes.append('('+parsed['name']+')')
+        for i in xrange(int(parsed['lcl_count'])):
+            codes += ['@'+str(i), 'D=A', '@SP', 'A=A+D', 'M=0'] # init *(SP+i) = 0
+    elif cmd == 'return':
+        codes += ['@LCL', 'D=M', '@R13', 'M=D'] # FRAME = LCL
+        codes += ['@5', 'D=A', '@R13', 'A=M-D', 'D=M', '@R14', 'M=D'] # RET = *(FRAME-5)
+        codes += snippets['D = *(SP-1)'] + ['@ARG', 'A=M', 'M=D'] # *ARG = pop()
+        codes += ['@ARG', 'D=M+1', '@SP', 'M=D'] # SP = ARG+1
+        codes += ['@1', 'D=A', '@R13', 'A=M-D', 'D=M', '@THAT', 'M=D'] # THAT = *(FRAME-1)
+        codes += ['@2', 'D=A', '@R13', 'A=M-D', 'D=M', '@THIS', 'M=D'] # THIS = *(FRAME-2)
+        codes += ['@3', 'D=A', '@R13', 'A=M-D', 'D=M', '@ARG', 'M=D'] # ARG = *(FRAME-3)
+        codes += ['@4', 'D=A', '@R13', 'A=M-D', 'D=M', '@LCL', 'M=D'] # LCL = *(FRAME-4)
+        codes += ['@R14', '0;JMP'] # goto RET
 
     return codes
 
