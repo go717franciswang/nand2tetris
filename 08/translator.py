@@ -168,18 +168,51 @@ def code(parsed):
         codes += ['@3', 'D=A', '@R13', 'A=M-D', 'D=M', '@ARG', 'M=D'] # ARG = *(FRAME-3)
         codes += ['@4', 'D=A', '@R13', 'A=M-D', 'D=M', '@LCL', 'M=D'] # LCL = *(FRAME-4)
         codes += ['@R14', 'A=M', '0;JMP'] # goto RET
+    elif cmd == 'call':
+        ret_label = 'RET'+str(get_label_id())
+        codes += ['@'+ret_label, 'D=A']
+        codes += snippets['*SP = D']
+        codes += snippets['increment SP']
+        codes += ['@LCL', 'D=M'] # push LCL
+        codes += snippets['*SP = D']
+        codes += snippets['increment SP']
+        codes += ['@ARG', 'D=M'] # push ARG
+        codes += snippets['*SP = D']
+        codes += snippets['increment SP']
+        codes += ['@THIS', 'D=M'] # push THIS
+        codes += snippets['*SP = D']
+        codes += snippets['increment SP']
+        codes += ['@THAT', 'D=M'] # push THAT
+        codes += snippets['*SP = D']
+        codes += snippets['increment SP']
+        nplus5 = str(int(parsed['argc'])+5)
+        codes += ['@'+nplus5, 'D=A', '@SP', 'D=M-D', '@ARG', 'M=D'] # ARG = SP-n-5
+        codes += ['@SP', 'D=M', '@LCL', 'M=D'] # LCL = SP
+        codes += ['@'+parsed['name'], '0;JMP'] # goto f
+        codes.append('('+ret_label+')')
 
     return codes
 
 if __name__ == '__main__':
     import sys
-    filein = sys.argv[1]
-    fileout = filein.split('.')[0]+'.asm'
-    fout = open(fileout, 'w')
-    for line in open(filein).readlines():
-        parsed = parse(line)
-        if parsed is None:
-            continue
+    import os
+    import glob
 
-        codes = code(parsed)
-        fout.write('\n'.join(codes)+'\n')
+    filein = sys.argv[1]
+
+    if os.path.isdir(filein):
+        fileout = os.path.join(filein, filein.strip('/') + '.asm')
+        fileins = glob.glob(os.path.join(filein, '*.vm'))
+    else:
+        fileout = filein.split('.')[0]+'.asm'
+        fileins = [filein]
+    fout = open(fileout, 'w')
+
+    for f in fileins:
+        for line in open(f).readlines():
+            parsed = parse(line)
+            if parsed is None:
+                continue
+
+            codes = code(parsed)
+            fout.write('\n'.join(codes)+'\n')
