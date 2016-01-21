@@ -193,6 +193,11 @@ def code(parsed):
 
     return codes
 
+def write_bootstrap(fout):
+    codes = ['@256', 'D=A', '@SP', 'M=D'] # SP = 256
+    codes += code({'cmd': 'call', 'name': 'Sys.init', 'argc': 0})
+    fout.write('\n'.join(codes)+'\n')
+
 if __name__ == '__main__':
     import sys
     import os
@@ -208,7 +213,9 @@ if __name__ == '__main__':
         fileins = [filein]
     fout = open(fileout, 'w')
 
+    write_bootstrap(fout)
     for f in fileins:
+        print 'translating: '+str(f)
         for line in open(f).readlines():
             parsed = parse(line)
             if parsed is None:
