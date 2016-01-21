@@ -58,8 +58,9 @@ def get_pointer_label(value):
     elif value == 1:
         return 'THAT'
 
+cur_module = None
 def get_static_label(value):
-    return str(int(value)+16)
+    return cur_module+'.'+str(value)
 
 def code(parsed):
     cmd = parsed['cmd']
@@ -216,6 +217,7 @@ if __name__ == '__main__':
     write_bootstrap(fout)
     for f in fileins:
         print 'translating: '+str(f)
+        cur_module = os.path.basename(f).split('.')[0]
         for line in open(f).readlines():
             parsed = parse(line)
             if parsed is None:
