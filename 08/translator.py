@@ -155,7 +155,9 @@ def code(parsed):
     elif cmd == 'function':
         codes.append('('+parsed['name']+')')
         for i in xrange(int(parsed['lcl_count'])):
-            codes += ['@'+str(i), 'D=A', '@SP', 'A=A+D', 'M=0'] # init *(SP+i) = 0
+            codes.append('D=0')
+            codes += snippets['*SP = D']
+            codes += snippets['increment SP']
     elif cmd == 'return':
         codes += ['@LCL', 'D=M', '@R13', 'M=D'] # FRAME = LCL
         codes += ['@5', 'D=A', '@R13', 'A=M-D', 'D=M', '@R14', 'M=D'] # RET = *(FRAME-5)
@@ -165,7 +167,7 @@ def code(parsed):
         codes += ['@2', 'D=A', '@R13', 'A=M-D', 'D=M', '@THIS', 'M=D'] # THIS = *(FRAME-2)
         codes += ['@3', 'D=A', '@R13', 'A=M-D', 'D=M', '@ARG', 'M=D'] # ARG = *(FRAME-3)
         codes += ['@4', 'D=A', '@R13', 'A=M-D', 'D=M', '@LCL', 'M=D'] # LCL = *(FRAME-4)
-        codes += ['@R14', '0;JMP'] # goto RET
+        codes += ['@R14', 'A=M', '0;JMP'] # goto RET
 
     return codes
 
