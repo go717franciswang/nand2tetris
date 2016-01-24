@@ -8,19 +8,18 @@
 class SpeedTypingGame {
 
     field String keyword;
-    field String word;
-    field int wordPos;
+    field Word word;
 
     constructor SpeedTypingGame new() {
         let keyword = String.new(25);
-        let word = "ABC";
-        let wordPos = 0;
+        let word = Word.new("ABC", 5, 1);
 
         return this;
     }
 
     method void dispose() {
         do keyword.dispose();
+        do word.dispose();
         do Memory.deAlloc(this);
         return;
     }
@@ -68,12 +67,7 @@ class SpeedTypingGame {
     }
 
     method void moveWord() {
-        do Output.moveCursor(5, wordPos);
-        do Output.backSpace();
-        do Output.moveCursor(5, wordPos);
-        do Output.printString(word);
-        let wordPos = Math.min(wordPos + 1, 50);
-
+        do word.animate();
         do Sys.wait(5);
         return;
     }
