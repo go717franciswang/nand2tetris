@@ -9,10 +9,14 @@ class SpeedTypingGame {
 
     field String keyword;
     field Word word;
+    field Word word2;
+    field String BLANK;
 
     constructor SpeedTypingGame new() {
         let keyword = String.new(25);
-        let word = Word.new("ABC", 5, 1);
+        let BLANK = "                         ";
+        let word = Word.new("ABC", 5, 1, 0);
+        let word2 = Word.new("DEFG", 7, 2, 30);
 
         return this;
     }
@@ -20,6 +24,7 @@ class SpeedTypingGame {
     method void dispose() {
         do keyword.dispose();
         do word.dispose();
+        do word2.dispose();
         do Memory.deAlloc(this);
         return;
     }
@@ -49,7 +54,12 @@ class SpeedTypingGame {
                 do clearKeyword();
                 do Output.moveCursor(20, 0);
                 do Output.printString(keyword);
-                do word.matchKeyword(keyword);
+                if (word.matchKeyword(keyword)) {
+                    do resetKeyword();
+                }
+                if (word2.matchKeyword(keyword)) {
+                    do resetKeyword();
+                }
             }
 
             while (~(key = 0)) {
@@ -61,14 +71,23 @@ class SpeedTypingGame {
         return;
 	}
 
+    method void resetKeyword() {
+        while (keyword.length() > 0) {
+            do keyword.eraseLastChar();
+        }
+        do clearKeyword();
+        return;
+    }
+
     method void clearKeyword() {
         do Output.moveCursor(20, 0);
-        do Output.printString("                         ");
+        do Output.printString(BLANK);
         return;
     }
 
     method void moveWord() {
         do word.animate();
+        do word2.animate();
         do Sys.wait(5);
         return;
     }

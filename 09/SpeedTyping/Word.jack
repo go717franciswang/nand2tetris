@@ -2,43 +2,72 @@ class Word {
     field String word;
     field int row;
     field int velocity;
+    field int beginAt;
     field int x;
     field boolean matched;
+    field String BLANK;
 
-    constructor Word new(String w, int r, int v) {
+    constructor Word new(String w, int r, int v, int b) {
         let word = w;
         let row = r;
         let velocity = v;
+        let beginAt = b;
         let x = 0;
         let matched = false;
+        let BLANK = "                         ";
         return this;
     }
 
     method void dispose() {
         do word.dispose();
+        do BLANK.dispose();
         do Memory.deAlloc(this);
         return;
     }
 
     method void animate() {
         var int col;
-        let col = Math.min(x/20, 50);
-        do Output.moveCursor(row, Math.max(0,col-1));
-        do Output.printString("             ");
+        do tick();
+        if (isInvisible()) {
+            return;
+        }
 
+        do erase();
+        let col = Math.min((x-beginAt)/20, 50);
+        do Output.moveCursor(row, col);
+        do Output.printString(word);
+        return;
+    }
+
+    method void tick() {
         if (~matched) {
-            do Output.moveCursor(row, col);
-            do Output.printString(word);
             let x = x + velocity;
         }
         return;
     }
 
-    method void matchKeyword(String keyword) {
+    method boolean isInvisible() {
+        return (x < beginAt) | matched;
+    }
+
+    method void erase() {
+        var int col;
+        let col = Math.min((x-beginAt)/20, 50);
+        do Output.moveCursor(row, Math.max(0,col-1));
+        do Output.printString(BLANK);
+        return;
+    }
+
+    method boolean matchKeyword(String keyword) {
+        if (isInvisible()) {
+            return false;
+        }
         if (Word.strEqual(word, keyword)) {
             let matched = true;
+            do erase();
+            return true;
         }
-        return;
+        return false;
     }
 
     function boolean strEqual(String a, String b) {
