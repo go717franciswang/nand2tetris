@@ -30,23 +30,24 @@ class SpeedTypingGame {
         var boolean exit;
 
         let exit = false;
+        // keycodes textbook pg 71
         while (~exit) {
             while (key = 0) {
                 let key = Keyboard.keyPressed();
                 do moveWord();
             }
 
-            if (key = 81) {
+            if (key = 140) { // esc
                 let exit = true;
             }
-
-            if (~(key = 81)) {
-                if (key = 8) { // backspace
+            if (~(key = 140)) {
+                if ((key = 129) & (~(keyword.length() = 0))) { // backspace
                     do keyword.eraseLastChar();
                 }
-                if (~(key = 8)) {
+                if (~(key = 129) & (~(keyword.length() = 25))) {
                     do keyword.appendChar(key);
                 }
+                do clearKeyword();
                 do Output.moveCursor(20, 0);
                 do Output.printString(keyword);
             }
@@ -60,12 +61,20 @@ class SpeedTypingGame {
         return;
 	}
 
+    method void clearKeyword() {
+        do Output.moveCursor(20, 0);
+        do Output.printString("                         ");
+        return;
+    }
+
     method void moveWord() {
         do Output.moveCursor(5, wordPos);
         do Output.backSpace();
-        do Output.printChar(" ");
+        do Output.moveCursor(5, wordPos);
         do Output.printString(word);
-        let wordPos = wordPos + 1;
+        let wordPos = Math.min(wordPos + 1, 50);
+
+        do Sys.wait(5);
         return;
     }
 }
