@@ -1,7 +1,6 @@
 // This file is part of www.nand2tetris.org
 // and the book "The Elements of Computing Systems"
 // by Nisan and Schocken, MIT Press.
-// File name: projects/09/Square/SquareGame.jack
 
 /**
  * Implements the SpeedTyping game.
@@ -9,9 +8,13 @@
 class SpeedTypingGame {
 
     field String keyword;
+    field String word;
+    field int wordPos;
 
     constructor SpeedTypingGame new() {
         let keyword = String.new(25);
+        let word = "ABC";
+        let wordPos = 0;
 
         return this;
     }
@@ -28,17 +31,41 @@ class SpeedTypingGame {
 
         let exit = false;
         while (~exit) {
-            let key = Keyboard.readChar();
+            while (key = 0) {
+                let key = Keyboard.keyPressed();
+                do moveWord();
+            }
 
             if (key = 81) {
                 let exit = true;
             }
 
             if (~(key = 81)) {
-                do keyword.appendChar(key);
+                if (key = 8) { // backspace
+                    do keyword.eraseLastChar();
+                }
+                if (~(key = 8)) {
+                    do keyword.appendChar(key);
+                }
+                do Output.moveCursor(20, 0);
+                do Output.printString(keyword);
+            }
+
+            while (~(key = 0)) {
+                let key = Keyboard.keyPressed();
+                do moveWord();
             }
         }
             
         return;
 	}
+
+    method void moveWord() {
+        do Output.moveCursor(5, wordPos);
+        do Output.backSpace();
+        do Output.printChar(" ");
+        do Output.printString(word);
+        let wordPos = wordPos + 1;
+        return;
+    }
 }
