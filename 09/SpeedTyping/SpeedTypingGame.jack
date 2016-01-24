@@ -49,6 +49,7 @@ class SpeedTypingGame {
                 do clearKeyword();
                 do Output.moveCursor(20, 0);
                 do Output.printString(keyword);
+                do word.matchKeyword(keyword);
             }
 
             while (~(key = 0)) {

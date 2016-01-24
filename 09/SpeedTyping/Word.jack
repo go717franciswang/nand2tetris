@@ -1,0 +1,61 @@
+class Word {
+    field String word;
+    field int row;
+    field int velocity;
+    field int x;
+    field boolean matched;
+
+    constructor Word new(String w, int r, int v) {
+        let word = w;
+        let row = r;
+        let velocity = v;
+        let x = 0;
+        let matched = false;
+        return this;
+    }
+
+    method void dispose() {
+        do word.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method void animate() {
+        var int col;
+        let col = Math.min(x/20, 50);
+        do Output.moveCursor(row, Math.max(0,col-1));
+        do Output.printString("             ");
+
+        if (~matched) {
+            do Output.moveCursor(row, col);
+            do Output.printString(word);
+            let x = x + velocity;
+        }
+        return;
+    }
+
+    method void matchKeyword(String keyword) {
+        if (Word.strEqual(word, keyword)) {
+            let matched = true;
+        }
+        return;
+    }
+
+    function boolean strEqual(String a, String b) {
+        var int i;
+
+        if (~(a.length() = b.length())) {
+            return false;
+        }
+
+        let i = 0;
+        while (i < a.length()) {
+            if (~(a.charAt(i) = b.charAt(i))) {
+                return false;
+            }
+            let i = i+1;
+        }
+
+        return true;
+    }
+}
