@@ -5,7 +5,8 @@ class Word {
     field int beginAt;
     field int x;
     field boolean matched;
-    field String BLANK;
+    static String BLANK;
+    static int lastCol;
 
     constructor Word new(String w, int r, int v, int b) {
         let word = w;
@@ -15,6 +16,7 @@ class Word {
         let x = 0;
         let matched = false;
         let BLANK = "                         ";
+        let lastCol = 62;
         return this;
     }
 
@@ -33,7 +35,7 @@ class Word {
         }
 
         do erase();
-        let col = Math.min((x-beginAt)/20, 50);
+        let col = Math.min((x-beginAt)/20, lastCol);
         do Output.moveCursor(row, col);
         do Output.printString(word);
         return;
@@ -45,14 +47,14 @@ class Word {
 
     method void erase() {
         var int col;
-        let col = Math.min((x-beginAt)/20, 50);
+        let col = Math.min((x-beginAt)/20, lastCol);
         do Output.moveCursor(row, Math.max(0,col-1));
         do Output.printString(BLANK);
         return;
     }
 
     method boolean isGameOver() {
-        return (((x-beginAt)/20) > 60) & (~matched);
+        return (((x-beginAt)/20) > lastCol) & (~matched);
     }
 
     method boolean matchKeyword(String keyword) {

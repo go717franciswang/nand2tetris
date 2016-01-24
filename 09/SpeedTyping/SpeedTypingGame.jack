@@ -10,16 +10,23 @@ class SpeedTypingGame {
     field String keyword;
     field int wordsCount;
     field Array words;
-    field String BLANK;
-    field String GAME_OVER;
     field boolean exit;
+    field int score;
+
+    static String BLANK;
+    static String GAME_OVER;
+    static String SCORE;
+    static int bottomRow;
 
     constructor SpeedTypingGame new() {
         let keyword = String.new(25);
         let BLANK = "                         ";
         let GAME_OVER = "GAME OVER";
+        let SCORE = "Score: ";
         let exit = false;
+        let score = 0;
         let wordsCount = 9;
+        let bottomRow = 22;
         let words = Array.new(wordsCount);
         let words[0] = Word.new("DROGO", 1, 1, 0);
         let words[1] = Word.new("BEATS", 3, 2, 30);
@@ -73,7 +80,7 @@ class SpeedTypingGame {
                     do keyword.appendChar(key);
                 }
                 do clearKeyword();
-                do Output.moveCursor(21, 0);
+                do Output.moveCursor(bottomRow, 0);
                 do Output.printString(keyword);
                 do matchKeyword();
             }
@@ -98,6 +105,7 @@ class SpeedTypingGame {
             let word = words[i];
             if (word.matchKeyword(keyword)) {
                 do resetKeyword();
+                let score = score + 100;
             }
             let i = i + 1;
         }
@@ -113,7 +121,7 @@ class SpeedTypingGame {
     }
 
     method void clearKeyword() {
-        do Output.moveCursor(20, 0);
+        do Output.moveCursor(bottomRow, 0);
         do Output.printString(BLANK);
         return;
     }
@@ -131,6 +139,11 @@ class SpeedTypingGame {
 
             let i = i + 1;
         }
+
+        do Output.moveCursor(bottomRow, 52);
+        do Output.printString(SCORE);
+        do Output.printInt(score);
+
         do Sys.wait(5);
         return;
     }
