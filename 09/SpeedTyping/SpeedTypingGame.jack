@@ -15,10 +15,15 @@ class SpeedTypingGame {
     constructor SpeedTypingGame new() {
         let keyword = String.new(25);
         let BLANK = "                         ";
-        let wordsCount = 2;
+        let wordsCount = 7;
         let words = Array.new(wordsCount);
-        let words[0] = Word.new("ABC", 5, 1, 0);
-        let words[1] = Word.new("DEFG", 7, 2, 30);
+        let words[0] = Word.new("THIS", 1, 1, 0);
+        let words[1] = Word.new("IS", 3, 2, 30);
+        let words[2] = Word.new("MY", 5, 1, 60);
+        let words[3] = Word.new("GAME", 7, 4, 90);
+        let words[4] = Word.new("FOR", 9, 1, 120);
+        let words[5] = Word.new("PROJECT", 11, 3, 150);
+        let words[6] = Word.new("9", 13, 2, 180);
 
         return this;
     }
