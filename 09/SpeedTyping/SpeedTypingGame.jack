@@ -11,19 +11,25 @@ class SpeedTypingGame {
     field int wordsCount;
     field Array words;
     field String BLANK;
+    field String GAME_OVER;
+    field boolean exit;
 
     constructor SpeedTypingGame new() {
         let keyword = String.new(25);
         let BLANK = "                         ";
-        let wordsCount = 7;
+        let GAME_OVER = "GAME OVER";
+        let exit = false;
+        let wordsCount = 9;
         let words = Array.new(wordsCount);
-        let words[0] = Word.new("THIS", 1, 1, 0);
-        let words[1] = Word.new("IS", 3, 2, 30);
-        let words[2] = Word.new("MY", 5, 1, 60);
-        let words[3] = Word.new("GAME", 7, 4, 90);
-        let words[4] = Word.new("FOR", 9, 1, 120);
-        let words[5] = Word.new("PROJECT", 11, 3, 150);
-        let words[6] = Word.new("9", 13, 2, 180);
+        let words[0] = Word.new("DROGO", 1, 1, 0);
+        let words[1] = Word.new("BEATS", 3, 2, 30);
+        let words[2] = Word.new("BLY", 5, 1, 60);
+        let words[3] = Word.new("4", 7, 4, 90);
+        let words[4] = Word.new("V", 9, 1, 120);
+        let words[5] = Word.new("1", 11, 3, 150);
+        let words[6] = Word.new("IN", 13, 2, 180);
+        let words[7] = Word.new("DREAMHACK", 15, 1, 210);
+        let words[8] = Word.new("2016", 17, 2, 240);
 
         return this;
     }
@@ -41,20 +47,19 @@ class SpeedTypingGame {
         do words.dispose();
         do keyword.dispose();
         do BLANK.dispose();
+        do GAME_OVER.dispose();
         do Memory.deAlloc(this);
         return;
     }
 
     method void run() {
         var char key;
-        var boolean exit;
 
-        let exit = false;
         // keycodes textbook pg 71
         while (~exit) {
             while (key = 0) {
                 let key = Keyboard.keyPressed();
-                do moveWord();
+                do animate();
             }
 
             if (key = 140) { // esc
@@ -68,16 +73,19 @@ class SpeedTypingGame {
                     do keyword.appendChar(key);
                 }
                 do clearKeyword();
-                do Output.moveCursor(20, 0);
+                do Output.moveCursor(21, 0);
                 do Output.printString(keyword);
                 do matchKeyword();
             }
 
             while (~(key = 0)) {
                 let key = Keyboard.keyPressed();
-                do moveWord();
+                do animate();
             }
+            do animate();
         }
+        do Output.moveCursor(10, 25);
+        do Output.printString(GAME_OVER);
             
         return;
 	}
@@ -110,13 +118,17 @@ class SpeedTypingGame {
         return;
     }
 
-    method void moveWord() {
+    method void animate() {
         var int i;
         var Word word;
         let i = 0;
         while (i < wordsCount) {
             let word = words[i];
             do word.animate();
+            if (word.isGameOver()) {
+                let exit = true;
+            }
+
             let i = i + 1;
         }
         do Sys.wait(5);

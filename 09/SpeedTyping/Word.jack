@@ -27,7 +27,7 @@ class Word {
 
     method void animate() {
         var int col;
-        do tick();
+        let x = x + velocity;
         if (isInvisible()) {
             return;
         }
@@ -36,13 +36,6 @@ class Word {
         let col = Math.min((x-beginAt)/20, 50);
         do Output.moveCursor(row, col);
         do Output.printString(word);
-        return;
-    }
-
-    method void tick() {
-        if (~matched) {
-            let x = x + velocity;
-        }
         return;
     }
 
@@ -56,6 +49,10 @@ class Word {
         do Output.moveCursor(row, Math.max(0,col-1));
         do Output.printString(BLANK);
         return;
+    }
+
+    method boolean isGameOver() {
+        return (((x-beginAt)/20) > 60) & (~matched);
     }
 
     method boolean matchKeyword(String keyword) {
