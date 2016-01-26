@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import tokenizer
+import parser
 
 if __name__ == '__main__':
     import sys
@@ -16,5 +17,6 @@ if __name__ == '__main__':
 
     for f in fileins:
         print 'compiling ' + str(f)
-        tokenizer.tokenize(f)
+        tokens = tokenizer.tokenize(f)
+        parser.parse(tokens)
 
