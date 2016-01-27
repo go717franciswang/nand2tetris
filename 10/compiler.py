@@ -18,5 +18,6 @@ if __name__ == '__main__':
     for f in fileins:
         print 'compiling ' + str(f)
         tokens = tokenizer.tokenize(f)
-        parser.parse(tokens)
+        p = parser.Parser.new(tokens)
+        p.parse()
 
