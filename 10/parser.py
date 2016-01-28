@@ -21,9 +21,9 @@ class Parser:
 
     def compile_class(self):
         elements = []
-        elements.append(advance('keyword', {'class'}))
-        elements.append(advance('identifier'))
-        elements.append(advance('symbol', {'{'}))
+        elements.append(self.advance('keyword', {'class'}))
+        elements.append(self.advance('identifier'))
+        elements.append(self.advance('symbol', {'{'}))
 
         while True:
             try:
@@ -39,33 +39,72 @@ class Parser:
             except NoMatch as e:
                 break
 
-        elements.append(advance('symbol', {'}'}))
+        elements.append(self.advance('symbol', {'}'}))
         return ('class', elements)
 
     def compile_class_var_dec(self):
         elements = []
-        elements.append(advance('keyword', {'static','field'}))
+        elements.append(self.advance('keyword', {'static','field'}))
         try:
-            elements.append(advance('keyword', {'int','char','boolean'}))
-        except NoMatch:
-            elements.append(advance('identifier'))
-        elements.advance('identifier')
+            elements.append(self.advance('keyword', {'int','char','boolean'}))
+        except NoMatch as e:
+            elements.append(self.advance('identifier'))
+        elements.append(self.advance('identifier'))
 
         while True:
             try:
-                elements.append(advance('symbol', {','}))
-                elements.advance('identifier')
+                elements.append(self.advance('symbol', {','}))
+                elements.append(self.advance('identifier'))
             except:
                 break
-        elements.advance('symbol', {';'})
+        elements.append(self.advance('symbol', {';'}))
+        return ('classVarDec', elements)
 
     def compile_subroutine(self):
-        """docstring for compile_subroutine"""
-        pass
+        elements = []
+        elements.append(self.advance('keyword', {'constructor','function','method'}))
+        try:
+            elements.append(self.advance('keyword', {'void','int','char','boolean'}))
+        except NoMatch as e:
+            elements.append(self.advance('identifier'))
+        elements.append(self.advance('identifier'))
+        elements.append(self.advance('symbol'), {'('})
+        elements.append(self.compile_parameter_list())
+        elements.append(self.advance('symbol'), {')'})
+        elements.append(self.compile_subroutine_body())
+        return ('subroutineDec', elements)
 
     def compile_parameter_list(self):
-        """docstring for comp"""
-        pass
+        elements = []
+        try:
+            elements.append(self.advance('keyword', {'int','char','boolean'}))
+        except NoMatch as e:
+            elements.append(self.advance('identifier'))
+        elements.append(self.advance('identifier'))
+
+        while True:
+            try:
+                elements.append(self.advance('symbol', {','}))
+            except NoMatch as e:
+                break
+            try:
+                elements.append(self.advance('keyword', {'int','char','boolean'}))
+            except NoMatch as e:
+                elements.append(self.advance('identifier'))
+            elements.append(self.advance('identifier'))
+        return ('parameterList', elements)
+
+    def compile_subroutine_body(self):
+        elements = []
+        elements.append(self.advance('symbol', {'{'}))
+        elements.append(self.compile_statements())
+        elements.append(self.advance('symbol', {'}'}))
+        return ('subroutineBody', elements)
+
+    def compile_statements(self):
+        elements = []
+        # TODO
+        return ('statements', elements)
 
     def compile_var_dec(self):
         """docstring for compile_var_dec"""
