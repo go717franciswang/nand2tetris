@@ -2,6 +2,8 @@
 
 import tokenizer
 import parser
+import util
+from lxml import etree
 
 if __name__ == '__main__':
     import sys
@@ -20,4 +22,6 @@ if __name__ == '__main__':
         tokens = tokenizer.tokenize(f)
         p = parser.Parser(tokens)
         tree = p.parse()
+        print etree.tostring(util.tree2xml(tree), pretty_print=True)
+
 

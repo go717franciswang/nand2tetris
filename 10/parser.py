@@ -29,12 +29,10 @@ class Parser:
         elements.append(self.advance('symbol', {'{'}))
 
         while self.cur_token() in {'static','field'}:
-            class_var_dec = self.compile_class_var_dec()
-            elements += ('classVarDec', class_var_dec)
+            elements.append(self.compile_class_var_dec())
 
         while self.cur_token() in {'constructor','function','method'}:
-            subroutine_dec = self.compile_subroutine()
-            elements += ('subroutineDec', subroutine_dec)
+            elements.append(self.compile_subroutine())
 
         elements.append(self.advance('symbol', {'}'}))
         return ('class', elements)
