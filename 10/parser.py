@@ -19,6 +19,9 @@ class Parser:
         self.index += 1
         return (t, e)
 
+    def cur_token(self):
+        return self.tokens[self.index][1]
+
     def compile_class(self):
         elements = []
         elements.append(self.advance('keyword', {'class'}))
@@ -103,40 +106,90 @@ class Parser:
 
     def compile_statements(self):
         elements = []
-        # TODO
+        while True:
+            _,e = self.token[self.index]
+            if e == 'let':
+                elements.append(self.compile_let())
+            elif e == 'do':
+                elements.append(self.compile_do())
+            elif e == 'if':
+                elements.append(self.compile_if())
+            elif e == 'while':
+                elements.append(self.compile_while())
+            elif e == 'return':
+                elements.append(self.compile_return())
+                break
         return ('statements', elements)
 
     def compile_var_dec(self):
         """docstring for compile_var_dec"""
         pass
 
-    def compile_statements(self):
-        """docstring for compile_statemetns"""
-        pass
-
     def compile_do(self):
-        """docstring for compile_do"""
-        pass
+        elements = []
+        elements.append(self.advance('keyword', {'do'}))
+        elements.append(self.advance('identifier'))
+        if self.cur_token() == '.':
+            elements.append(self.advance('symbol', {'.'}))
+            elements.append(self.advance('identifier'))
+        elements.append(self.advance('symbol', {'('}))
+        elements.append(self.compile_expression_list())
+        elements.append(self.advance('symbol', {')'}))
+        elements.append(self.advance('symbol', {';'}))
+        return ('doStatement', elements)
 
     def compile_let(self):
-        """docstring for compile_let"""
-        pass
+        elements = []
+        elements.append(self.advance('keyword', {'let'}))
+        elements.append(self.advance('identifier'))
+        if self.cur_token() == '[':
+            elements.append(self.advance('symbol', {'['}))
+            elements.append(self.compile_expression())
+            elements.append(self.advance('symbol', {']'}))
+        elements.append(self.advance('symbol', {'='}))
+        elements.append(self.compile_expression())
+        elements.append(self.advance('symbol', {';'}))
+        return ('letStatement', elements)
 
     def compile_while(self):
-        """docstring for compile_while"""
-        pass
+        elements = []
+        elements.append(self.advance('keyword', {'while'}))
+        elements.append(self.advance('symbol', {'('}))
+        elements.append(self.compile_expression())
+        elements.append(self.advance('symbol', {')'}))
+        elements.append(self.advance('symbol', {'{'}))
+        elements.append(self.compile_statements())
+        elements.append(self.advance('symbol', {'}'}))
+        return ('whileStatement', elements)
 
     def compile_return(self):
-        """docstring for compile_return"""
-        pass
+        elements = []
+        elements.append(self.advance('keyword', {'return'}))
+        if self.cur_token() != ';':
+            elements.append(self.compile_expression())
+        elements.append(self.advance('symbol', {';'}))
+        return ('returnStatement', elements)
 
     def compile_if(self):
-        """docstring for compile_if"""
-        pass
+        elements = []
+        elements.append(self.advance('keyword', {'if'}))
+        elements.append(self.advance('symbol', {'('}))
+        elements.append(self.compile_expression())
+        elements.append(self.advance('symbol', {')'}))
+        elements.append(self.advance('symbol', {'{'}))
+        elements.append(self.compile_statements())
+        elements.append(self.advance('symbol', {'}'}))
+        if self.cur_token() == 'else':
+            elements.append(self.advance('keyword', {'else'}))
+            elements.append(self.advance('symbol', {'{'}))
+            elements.append(self.compile_statements())
+            elements.append(self.advance('symbol', {'}'}))
+        return ('ifStatement', elements)
 
     def compile_expression(self):
-        """docstring for compile_expression"""
-        pass
+        elements = []
+        # TODO
+        return ('expression', elements)
 
     def compile_term(self):
         """docstring for compile_term"""
