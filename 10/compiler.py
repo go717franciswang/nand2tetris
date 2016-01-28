@@ -19,5 +19,5 @@ if __name__ == '__main__':
         print 'compiling ' + str(f)
         tokens = tokenizer.tokenize(f)
         p = parser.Parser(tokens)
-        print p.parse()
+        tree = p.parse()
 
