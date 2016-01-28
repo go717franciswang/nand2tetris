@@ -13,7 +13,7 @@ class Parser:
     def advance(self, valid_type, valid_elements=None):
         t, e = self.tokens[self.index]
         if t != valid_type:
-            raise NoMatch('Expected type: '+valid_type+', Got type: '+t)
+            raise NoMatch('Expected type: '+valid_type+', Got type: '+t+' => "'+e+'"')
         if valid_elements is not None and e not in valid_elements:
             raise NoMatch('Expected token: '+' | '.join(valid_elements)+', Got: '+e)
         self.index += 1
@@ -28,19 +28,13 @@ class Parser:
         elements.append(self.advance('identifier'))
         elements.append(self.advance('symbol', {'{'}))
 
-        while True:
-            try:
-                class_var_dec = compile_class_var_dec()
-                elements += ('classVarDec', class_var_dec)
-            except NoMatch as e:
-                break
+        while self.cur_token() in {'static','field'}:
+            class_var_dec = self.compile_class_var_dec()
+            elements += ('classVarDec', class_var_dec)
 
-        while True:
-            try:
-                subroutine_dec = compile_subroutine()
-                elements += ('subroutineDec', subroutine_dec)
-            except NoMatch as e:
-                break
+        while self.cur_token() in {'constructor','function','method'}:
+            subroutine_dec = self.compile_subroutine()
+            elements += ('subroutineDec', subroutine_dec)
 
         elements.append(self.advance('symbol', {'}'}))
         return ('class', elements)
@@ -54,12 +48,9 @@ class Parser:
             elements.append(self.advance('identifier'))
         elements.append(self.advance('identifier'))
 
-        while True:
-            try:
-                elements.append(self.advance('symbol', {','}))
-                elements.append(self.advance('identifier'))
-            except:
-                break
+        while self.cur_token() == ',':
+            elements.append(self.advance('symbol', {','}))
+            elements.append(self.advance('identifier'))
         elements.append(self.advance('symbol', {';'}))
         return ('classVarDec', elements)
 
@@ -71,30 +62,28 @@ class Parser:
         except NoMatch as e:
             elements.append(self.advance('identifier'))
         elements.append(self.advance('identifier'))
-        elements.append(self.advance('symbol'), {'('})
+        elements.append(self.advance('symbol', {'('}))
         elements.append(self.compile_parameter_list())
-        elements.append(self.advance('symbol'), {')'})
+        elements.append(self.advance('symbol', {')'}))
         elements.append(self.compile_subroutine_body())
         return ('subroutineDec', elements)
 
     def compile_parameter_list(self):
         elements = []
-        try:
-            elements.append(self.advance('keyword', {'int','char','boolean'}))
-        except NoMatch as e:
-            elements.append(self.advance('identifier'))
-        elements.append(self.advance('identifier'))
-
-        while True:
-            try:
-                elements.append(self.advance('symbol', {','}))
-            except NoMatch as e:
-                break
+        if self.cur_token() != ')':
             try:
                 elements.append(self.advance('keyword', {'int','char','boolean'}))
             except NoMatch as e:
                 elements.append(self.advance('identifier'))
             elements.append(self.advance('identifier'))
+
+            while self.cur_token() == ',':
+                elements.append(self.advance('symbol', {','}))
+                try:
+                    elements.append(self.advance('keyword', {'int','char','boolean'}))
+                except NoMatch as e:
+                    elements.append(self.advance('identifier'))
+                elements.append(self.advance('identifier'))
         return ('parameterList', elements)
 
     def compile_subroutine_body(self):
@@ -107,7 +96,7 @@ class Parser:
     def compile_statements(self):
         elements = []
         while True:
-            _,e = self.token[self.index]
+            e = self.cur_token()
             if e == 'let':
                 elements.append(self.compile_let())
             elif e == 'do':
@@ -118,6 +107,8 @@ class Parser:
                 elements.append(self.compile_while())
             elif e == 'return':
                 elements.append(self.compile_return())
+                break
+            else:
                 break
         return ('statements', elements)
 
@@ -188,13 +179,20 @@ class Parser:
 
     def compile_expression(self):
         elements = []
-        # TODO
+        elements.append(self.compile_term())
         return ('expression', elements)
 
     def compile_term(self):
-        """docstring for compile_term"""
-        pass
+        elements = []
+        elements.append(self.advance('identifier'))
+        return ('term', elements)
 
     def compile_expression_list(self):
-        """docstring for compile_expression_list"""
-        pass
+        elements = []
+        while True:
+            try:
+                elements.append(self.compile_expression())
+                elements.append(self.advance('symbol', {','}))
+            except NoMatch as e:
+                break
+        return ('expressionList', elements)
