@@ -1,6 +1,9 @@
 class NoMatch(Exception):
     pass
 
+operators = {'+','-','*','/','&','|','<','>','='}
+keyword_constants = {'true','false','null','this'}
+
 class Parser:
     index = 0
 
@@ -21,6 +24,9 @@ class Parser:
 
     def cur_token(self):
         return self.tokens[self.index][1]
+
+    def cur_type(self):
+        return self.tokens[self.index][0]
 
     def compile_class(self):
         elements = []
@@ -187,19 +193,58 @@ class Parser:
     def compile_expression(self):
         elements = []
         elements.append(self.compile_term())
+        while self.cur_token() in operators:
+            elements.append(self.advance('symbol', operators))
+            elements.append(self.compile_term())
+
         return ('expression', elements)
 
     def compile_term(self):
         elements = []
-        elements.append(self.advance('identifier'))
+        if self.cur_type() == 'integerConstant':
+            elements.append(self.advance('integerConstant'))
+        elif self.cur_type() == 'stringConstant':
+            elements.append(self.advance('stringConstant'))
+        elif self.cur_token() in keyword_constants:
+            elements.append(self.advance('keyword', keyword_constants))
+        elif self.cur_type() == 'identifier':
+            elements.append(self.advance('identifier'))
+            if self.cur_token() == '[':
+                elements.append(self.advance('symbol',{'['}))
+                elements.append(self.compile_expression())
+                elements.append(self.advance('symbol',{']'}))
+            elif self.cur_token() == '(':
+                elements.append(self.advance('symbol',{'('}))
+                elements.append(self.compile_expression_list())
+                elements.append(self.advance('symbol',{')'}))
+            elif self.cur_token() == '.':
+                elements.append(self.advance('symbol',{'.'}))
+                elements.append(self.advance('identifier'))
+                elements.append(self.advance('symbol',{'('}))
+                elements.append(self.compile_expression_list())
+                elements.append(self.advance('symbol',{')'}))
+        elif self.cur_token() == '(':
+            elements.append(self.advance('symbol',{'('}))
+            elements.append(self.compile_expression())
+            elements.append(self.advance('symbol',{')'}))
+        elif self.cur_token() in {'-','~'}:
+            elements.append(self.advance('symbol',{'-','~'}))
+            elements.append(self.compile_term())
+        else:
+            raise NoMatch()
+            # raise Exception(self.tokens[self.index-5:self.index+1])
+
         return ('term', elements)
 
     def compile_expression_list(self):
         elements = []
         while True:
+            save_index = self.index
             try:
                 elements.append(self.compile_expression())
+                save_index = self.index
                 elements.append(self.advance('symbol', {','}))
             except NoMatch as e:
+                self.index = save_index
                 break
         return ('expressionList', elements)
