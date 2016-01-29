@@ -87,6 +87,8 @@ class Parser:
     def compile_subroutine_body(self):
         elements = []
         elements.append(self.advance('symbol', {'{'}))
+        while self.cur_token() == 'var':
+            elements.append(self.compile_var_dec())
         elements.append(self.compile_statements())
         elements.append(self.advance('symbol', {'}'}))
         return ('subroutineBody', elements)
@@ -111,8 +113,15 @@ class Parser:
         return ('statements', elements)
 
     def compile_var_dec(self):
-        """docstring for compile_var_dec"""
-        pass
+        elements = []
+        elements.append(self.advance('keyword', {'var'}))
+        try:
+            elements.append(self.advance('keyword', {'int','char','boolean'}))
+        except NoMatch as e:
+            elements.append(self.advance('identifier'))
+        elements.append(self.advance('identifier'))
+        elements.append(self.advance('symbol', {';'}))
+        return ('varDec', elements)
 
     def compile_do(self):
         elements = []

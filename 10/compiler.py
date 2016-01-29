@@ -22,6 +22,10 @@ if __name__ == '__main__':
         tokens = tokenizer.tokenize(f)
         p = parser.Parser(tokens)
         tree = p.parse()
-        print etree.tostring(util.tree2xml(tree), pretty_print=True)
+        xml = etree.tostring(util.tree2xml(tree), pretty_print=True)
+        fileout = '.'.join(f.split('.')[0:-1])+'.F.xml'
+        print fileout
+        fout = open(fileout, 'w')
+        fout.write(xml)
 
 
