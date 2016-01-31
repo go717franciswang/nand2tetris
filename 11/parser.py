@@ -1,3 +1,5 @@
+import symbol_table
+
 class NoMatch(Exception):
     pass
 
@@ -9,6 +11,7 @@ class Parser:
 
     def __init__(self, tokens):
         self.tokens = tokens
+        self.symbols = symbol_table.SymbolTable()
 
     def parse(self):
         return self.compile_class()
@@ -46,11 +49,15 @@ class Parser:
     def compile_class_var_dec(self):
         elements = []
         elements.append(self.advance('keyword', {'static','field'}))
+        kind = elements[-1][1]
         try:
             elements.append(self.advance('keyword', {'int','char','boolean'}))
         except NoMatch as e:
             elements.append(self.advance('identifier'))
+        type = elements[-1][1]
         elements.append(self.advance('identifier'))
+        name = elements[-1][1]
+        self.symbols.define(name, type, kind)
 
         while self.cur_token() == ',':
             elements.append(self.advance('symbol', {','}))
