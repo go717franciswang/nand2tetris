@@ -62,7 +62,10 @@ class Parser:
         while self.cur_token() == ',':
             elements.append(self.advance('symbol', {','}))
             elements.append(self.advance('identifier'))
+            name = elements[-1][1]
+            self.symbols.define(name, type, kind)
         elements.append(self.advance('symbol', {';'}))
+            
         return ('classVarDec', elements)
 
     def compile_subroutine(self):
@@ -133,6 +136,11 @@ class Parser:
         except NoMatch as e:
             elements.append(self.advance('identifier'))
         elements.append(self.advance('identifier'))
+
+        while self.cur_token() == ',':
+            elements.append(self.advance('symbol', {','}))
+            elements.append(self.advance('identifier'))
+
         elements.append(self.advance('symbol', {';'}))
         return ('varDec', elements)
 
