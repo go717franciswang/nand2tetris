@@ -19,7 +19,8 @@ class Parser:
     def advance(self, valid_type, valid_elements=None):
         t, e = self.tokens[self.index]
         if t != valid_type:
-            raise NoMatch('Expected type: '+valid_type+', Got type: '+t+' => "'+e+'"')
+            info = ' '.join([x[1] for x in self.tokens[self.index-5:self.index+2]])
+            raise NoMatch('Expected type: '+valid_type+', Got type: '+t+' => "'+e+'", '+info)
         if valid_elements is not None and e not in valid_elements:
             raise NoMatch('Expected token: '+' | '.join(valid_elements)+', Got: '+e)
         self.index += 1
@@ -142,11 +143,16 @@ class Parser:
             elements.append(self.advance('keyword', {'int','char','boolean'}))
         except NoMatch as e:
             elements.append(self.advance('identifier'))
+        type = elements[-1][1]
         elements.append(self.advance('identifier'))
+        name = elements[-1][1]
+        self.symbols.define(name, type, 'var')
 
         while self.cur_token() == ',':
             elements.append(self.advance('symbol', {','}))
             elements.append(self.advance('identifier'))
+            name = elements[-1][1]
+            self.symbols.define(name, type, 'var')
 
         elements.append(self.advance('symbol', {';'}))
         return ('varDec', elements)
