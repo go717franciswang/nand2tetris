@@ -69,6 +69,7 @@ class Parser:
         return ('classVarDec', elements)
 
     def compile_subroutine(self):
+        self.symbols.start_subroutine()
         elements = []
         elements.append(self.advance('keyword', {'constructor','function','method'}))
         try:
@@ -89,7 +90,10 @@ class Parser:
                 elements.append(self.advance('keyword', {'int','char','boolean'}))
             except NoMatch as e:
                 elements.append(self.advance('identifier'))
+            type = elements[-1][1]
             elements.append(self.advance('identifier'))
+            name = elements[-1][1]
+            self.symbols.define(name, type, 'arg')
 
             while self.cur_token() == ',':
                 elements.append(self.advance('symbol', {','}))
@@ -97,7 +101,10 @@ class Parser:
                     elements.append(self.advance('keyword', {'int','char','boolean'}))
                 except NoMatch as e:
                     elements.append(self.advance('identifier'))
+                type = elements[-1][1]
                 elements.append(self.advance('identifier'))
+                name = elements[-1][1]
+                self.symbols.define(name, type, 'arg')
         return ('parameterList', elements)
 
     def compile_subroutine_body(self):
