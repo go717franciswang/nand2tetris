@@ -9,9 +9,10 @@ keyword_constants = {'true','false','null','this'}
 class Parser:
     index = 0
 
-    def __init__(self, tokens):
+    def __init__(self, tokens, writer):
         self.tokens = tokens
         self.symbols = symbol_table.SymbolTable()
+        self.writer = writer
 
     def parse(self):
         return self.compile_class()

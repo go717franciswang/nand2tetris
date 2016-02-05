@@ -4,6 +4,7 @@ import tokenizer
 import parser
 import util
 from lxml import etree
+import vm_writer
 
 if __name__ == '__main__':
     import sys
@@ -20,12 +21,15 @@ if __name__ == '__main__':
     for f in fileins:
         print 'compiling ' + str(f)
         tokens = tokenizer.tokenize(f)
-        p = parser.Parser(tokens)
+        vm_filename = '.'.join(f.split('.')[0:-1])+'.vm'
+        writer = vm_writer.VmWriter(vm_filename)
+        p = parser.Parser(tokens, writer)
         tree = p.parse()
         xml = etree.tostring(util.tree2xml(tree), pretty_print=True)
         fileout = '.'.join(f.split('.')[0:-1])+'.F.xml'
         print fileout
         fout = open(fileout, 'w')
         fout.write(xml)
+        writer.close()
 
 
