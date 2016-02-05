@@ -9,10 +9,11 @@ keyword_constants = {'true','false','null','this'}
 class Parser:
     index = 0
 
-    def __init__(self, tokens, writer):
+    def __init__(self, tokens, writer, module_name):
         self.tokens = tokens
         self.symbols = symbol_table.SymbolTable()
         self.writer = writer
+        self.module_name = module_name
 
     def parse(self):
         return self.compile_class()
@@ -83,6 +84,7 @@ class Parser:
         elements.append(self.compile_parameter_list())
         elements.append(self.advance('symbol', {')'}))
         elements.append(self.compile_subroutine_body())
+        # TODO: implement vm code here (pg, 237)
         return ('subroutineDec', elements)
 
     def compile_parameter_list(self):

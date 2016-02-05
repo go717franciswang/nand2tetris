@@ -23,7 +23,8 @@ if __name__ == '__main__':
         tokens = tokenizer.tokenize(f)
         vm_filename = '.'.join(f.split('.')[0:-1])+'.vm'
         writer = vm_writer.VmWriter(vm_filename)
-        p = parser.Parser(tokens, writer)
+        module_name = f.split('.')[-2]
+        p = parser.Parser(tokens, writer, module_name)
         tree = p.parse()
         xml = etree.tostring(util.tree2xml(tree), pretty_print=True)
         fileout = '.'.join(f.split('.')[0:-1])+'.F.xml'
