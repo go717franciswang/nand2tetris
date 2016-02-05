@@ -3,40 +3,31 @@ class VmWriter:
         self.out = open(out_filename, 'w')
 
     def write_push(self, segment, index):
-        """docstring for write_push"""
-        pass
+        self.out.write('push %s %s\n' % (segment, index))
 
     def write_pop(self, segment, index):
-        """docstring for write_pop"""
-        pass
+        self.out.write('pop %s %s\n' % (segment, index))
 
     def write_arithmetic(self, command):
-        """docstring for write_arithmetic"""
-        pass
+        self.out.write(command + '\n')
 
     def write_label(self, label):
-        """docstring for write_labelfname"""
-        pass
+        self.out.write('label %s\n' % (label,))
 
     def write_goto(self, label):
-        """docstring for write_goto"""
-        pass
+        self.out.write('goto %s\n' % (label,))
 
     def write_if(self, label):
-        """docstring for write_if"""
-        pass
+        self.out.write('if-goto %s\n' % (label,))
 
     def write_call(self, name, nargs):
-        """docstring for write_call"""
-        pass
+        self.out.write('call %s %s\n' % (name, nargs))
 
     def write_function(self, name, nlocals):
-        """docstring for write_function"""
-        pass
+        self.out.write('function %s %s\n' % (name, nlocals))
 
     def write_return(self):
-        """docstring for write_return"""
-        pass
+        self.out.write('return\n')
 
     def close(self):
         self.out.close()
