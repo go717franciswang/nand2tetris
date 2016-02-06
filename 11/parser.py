@@ -8,6 +8,7 @@ keyword_constants = {'true','false','null','this'}
 
 class Parser:
     index = 0
+    cur_func_name = None
 
     def __init__(self, tokens, writer, module_name):
         self.tokens = tokens
@@ -80,11 +81,13 @@ class Parser:
         except NoMatch as e:
             elements.append(self.advance('identifier'))
         elements.append(self.advance('identifier'))
+        self.cur_func_name = elements[-1][1]
+
         elements.append(self.advance('symbol', {'('}))
         elements.append(self.compile_parameter_list())
         elements.append(self.advance('symbol', {')'}))
         elements.append(self.compile_subroutine_body())
-        # TODO: implement vm code here (pg, 237)
+
         return ('subroutineDec', elements)
 
     def compile_parameter_list(self):
@@ -114,8 +117,11 @@ class Parser:
     def compile_subroutine_body(self):
         elements = []
         elements.append(self.advance('symbol', {'{'}))
+        nlocals = 0
         while self.cur_token() == 'var':
+            nlocals += 1
             elements.append(self.compile_var_dec())
+        self.writer.write_function(self.cur_func_name, nlocals)
         elements.append(self.compile_statements())
         elements.append(self.advance('symbol', {'}'}))
         return ('subroutineBody', elements)
@@ -177,6 +183,10 @@ class Parser:
         elements = []
         elements.append(self.advance('keyword', {'let'}))
         elements.append(self.advance('identifier'))
+        entity = elements[-1][1]
+
+        # need mechanism to defer writing because x[A] = B
+        # instructions for A should be written after B to vm stack
         if self.cur_token() == '[':
             elements.append(self.advance('symbol', {'['}))
             elements.append(self.compile_expression())
