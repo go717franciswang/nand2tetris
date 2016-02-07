@@ -1,6 +1,11 @@
+import StringIO
+
 class VmWriter:
-    def __init__(self, out_filename):
-        self.out = open(out_filename, 'w')
+    def __init__(self, out_filename, temp=False):
+        if temp:
+            self.out = StringIO.StringIO()
+        else:
+            self.out = open(out_filename, 'w')
 
     def write_push(self, segment, index):
         self.out.write('push %s %s\n' % (segment, index))
@@ -28,6 +33,9 @@ class VmWriter:
 
     def write_return(self):
         self.out.write('return\n')
+
+    def write_content(self, content):
+        self.out.write(content)
 
     def close(self):
         self.out.close()

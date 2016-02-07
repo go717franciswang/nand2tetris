@@ -1,10 +1,17 @@
 import symbol_table
+import vm_writer
 
 class NoMatch(Exception):
     pass
 
 operators = {'+','-','*','/','&','|','<','>','='}
 keyword_constants = {'true','false','null','this'}
+type2segment = {
+        'static': 'static',
+        'field': 'this',
+        'arg': 'argument',
+        'var': 'local'
+        }
 
 class Parser:
     index = 0
@@ -183,18 +190,41 @@ class Parser:
         elements = []
         elements.append(self.advance('keyword', {'let'}))
         elements.append(self.advance('identifier'))
-        entity = elements[-1][1]
+        name = elements[-1][1]
 
-        # need mechanism to defer writing because x[A] = B
-        # instructions for A should be written after B to vm stack
+        self._use_temp_writer()
         if self.cur_token() == '[':
             elements.append(self.advance('symbol', {'['}))
             elements.append(self.compile_expression())
             elements.append(self.advance('symbol', {']'}))
+        stack = self.writer.getvalue()
+        self._use_orig_writer()
+
         elements.append(self.advance('symbol', {'='}))
         elements.append(self.compile_expression())
         elements.append(self.advance('symbol', {';'}))
+
+        type = self.symbols.type_of(name)
+        segment = type2segment[type]
+        index = self.symbols.index_of(name)
+        if stack == '': # not an array, direct assignment
+            self.writer.write_pop(segment, index)
+        else:           # array, push index expression, array pointer, compute offset pointer, assign
+            self.writer.write_content(stack)
+            self.writer.write_push(segment, index)
+            self.writer.write_arithmetic('add')
+            self.writer.write_pop('pointer', 1)
+            self.writer.write_pop('that', 0)
+
         return ('letStatement', elements)
+
+    def _use_temp_writer(self):
+        self.orig_writer = self.writer
+        self.writer = vm_writer.VmWriter(temp=True)
+
+    def _use_orig_writer(self):
+        self.writer.close()
+        self.writer = self.orig_writer
 
     def compile_while(self):
         elements = []
