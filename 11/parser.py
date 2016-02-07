@@ -177,9 +177,17 @@ class Parser:
         elements = []
         elements.append(self.advance('keyword', {'do'}))
         elements.append(self.advance('identifier'))
+        func_or_module_name = elements[-1][1]
+
         if self.cur_token() == '.':
             elements.append(self.advance('symbol', {'.'}))
             elements.append(self.advance('identifier'))
+            module_name = func_or_module_name 
+            func_name = elements[-1][1]
+        else:
+            module_name = self.module_name
+            func_name = func_or_module_name
+
         elements.append(self.advance('symbol', {'('}))
         elements.append(self.compile_expression_list())
         elements.append(self.advance('symbol', {')'}))
@@ -207,6 +215,8 @@ class Parser:
         type = self.symbols.type_of(name)
         segment = type2segment[type]
         index = self.symbols.index_of(name)
+        # TODO: book (pg. 229) actually didn't defer stack
+        # but don't think it will work for situations like let x[0] = x[1]
         if stack == '': # not an array, direct assignment
             self.writer.write_pop(segment, index)
         else:           # array, push index expression, array pointer, compute offset pointer, assign
