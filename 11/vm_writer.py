@@ -1,5 +1,6 @@
 import StringIO
 
+# definitions pg.240
 class VmWriter:
     def __init__(self, out_filename, temp=False):
         if temp:

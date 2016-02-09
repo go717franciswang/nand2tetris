@@ -16,6 +16,7 @@ type2segment = {
 class Parser:
     index = 0
     cur_func_name = None
+    label_counter = 0
 
     def __init__(self, tokens, writer, module_name):
         self.tokens = tokens
@@ -192,6 +193,10 @@ class Parser:
         elements.append(self.compile_expression_list())
         elements.append(self.advance('symbol', {')'}))
         elements.append(self.advance('symbol', {';'}))
+
+        name = '%s.%s' % (module_name, func_name)
+        # TODO: check if we need to add 1 to cur_nargs for methods
+        self.writer.write_call(name, self.cur_nargs)
         return ('doStatement', elements)
 
     def compile_let(self):
@@ -215,7 +220,7 @@ class Parser:
         type = self.symbols.type_of(name)
         segment = type2segment[type]
         index = self.symbols.index_of(name)
-        # TODO: book (pg. 229) actually didn't defer stack
+        # book (pg. 229) actually didn't defer stack
         # but don't think it will work for situations like let x[0] = x[1]
         if stack == '': # not an array, direct assignment
             self.writer.write_pop(segment, index)
@@ -239,12 +244,24 @@ class Parser:
     def compile_while(self):
         elements = []
         elements.append(self.advance('keyword', {'while'}))
+
+        begin_label = self._gen_label()
+        end_label = self._gen_label()
+        self.writer.write_label(begin_label)
+
         elements.append(self.advance('symbol', {'('}))
         elements.append(self.compile_expression())
         elements.append(self.advance('symbol', {')'}))
+
+        self.writer.write_arithmetic('neg')
+        self.writer.write_if(end_label)
+
         elements.append(self.advance('symbol', {'{'}))
         elements.append(self.compile_statements())
         elements.append(self.advance('symbol', {'}'}))
+
+        self.writer.write_goto(begin_label)
+        self.writer.write_label(end_label)
         return ('whileStatement', elements)
 
     def compile_return(self):
@@ -253,6 +270,8 @@ class Parser:
         if self.cur_token() != ';':
             elements.append(self.compile_expression())
         elements.append(self.advance('symbol', {';'}))
+        #TODO: might need to return 0 for void type
+        self.writer.write_return()
         return ('returnStatement', elements)
 
     def compile_if(self):
@@ -260,6 +279,12 @@ class Parser:
         elements.append(self.advance('keyword', {'if'}))
         elements.append(self.advance('symbol', {'('}))
         elements.append(self.compile_expression())
+
+        
+        self.writer.write_arithmetic('neg')
+        label = self._gen_label()
+        self.writer.write_if(label)
+
         elements.append(self.advance('symbol', {')'}))
         elements.append(self.advance('symbol', {'{'}))
         elements.append(self.compile_statements())
@@ -269,7 +294,13 @@ class Parser:
             elements.append(self.advance('symbol', {'{'}))
             elements.append(self.compile_statements())
             elements.append(self.advance('symbol', {'}'}))
+        self.writer.write_label(label)
         return ('ifStatement', elements)
+
+    def _gen_label(self):
+        label = 'LABEL_%s' % (self.label_counter,)
+        self.label_counter += 1
+        return label
 
     def compile_expression(self):
         elements = []
@@ -319,12 +350,14 @@ class Parser:
 
     def compile_expression_list(self):
         elements = []
+        self.cur_nargs = 0
         while True:
             save_index = self.index
             try:
                 elements.append(self.compile_expression())
                 save_index = self.index
                 elements.append(self.advance('symbol', {','}))
+                self.cur_nargs += 1
             except NoMatch as e:
                 self.index = save_index
                 break
