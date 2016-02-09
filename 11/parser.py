@@ -351,14 +351,11 @@ class Parser:
     def compile_expression_list(self):
         elements = []
         self.cur_nargs = 0
-        while True:
-            save_index = self.index
-            try:
-                elements.append(self.compile_expression())
-                save_index = self.index
+        if self.cur_token() != ')':
+            elements.append(self.compile_expression())
+            self.cur_nargs += 1
+            while self.cur_token() == ',':
                 elements.append(self.advance('symbol', {','}))
+                elements.append(self.compile_expression())
                 self.cur_nargs += 1
-            except NoMatch as e:
-                self.index = save_index
-                break
         return ('expressionList', elements)
