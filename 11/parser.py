@@ -4,13 +4,27 @@ import vm_writer
 class NoMatch(Exception):
     pass
 
-operators = {'+','-','*','/','&','|','<','>','='}
+operators = {'+','-','*','/','&','|','<','>','=','~'}
 keyword_constants = {'true','false','null','this'}
 type2segment = {
         'static': 'static',
         'field': 'this',
         'arg': 'argument',
         'var': 'local'
+        }
+operator2arith = {
+        '+': 'add',
+        '-': 'sub',
+        '&': 'and',
+        '|': 'or',
+        '<': 'lt',
+        '>': 'gt',
+        '=': 'eq',
+        '~': 'not'
+        }
+operator2func = {
+        '*': 'Math.multiply',
+        '/': 'Math.divide'
         }
 
 class Parser:
@@ -307,7 +321,12 @@ class Parser:
         elements.append(self.compile_term())
         while self.cur_token() in operators:
             elements.append(self.advance('symbol', operators))
+            op = elements[-1][1]
             elements.append(self.compile_term())
+            if op in operator2arith:
+                self.writer.write_arithmetic(operator2arith[op])
+            else:
+                self.writer.write_call(operator2func[op], 2)
 
         return ('expression', elements)
 
@@ -315,8 +334,12 @@ class Parser:
         elements = []
         if self.cur_type() == 'integerConstant':
             elements.append(self.advance('integerConstant'))
+            self.writer.write_push('constant', elements[-1][1])
         elif self.cur_type() == 'stringConstant':
             elements.append(self.advance('stringConstant'))
+            # TODO implement string constant
+            # might need to use String.new to get an instance of string
+            # and temp stack to keep track of this instance
         elif self.cur_token() in keyword_constants:
             elements.append(self.advance('keyword', keyword_constants))
         elif self.cur_type() == 'identifier':
