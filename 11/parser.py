@@ -330,6 +330,7 @@ class Parser:
 
         return ('expression', elements)
 
+    # pg.209
     def compile_term(self):
         elements = []
         if self.cur_type() == 'integerConstant':
@@ -337,17 +338,31 @@ class Parser:
             self.writer.write_push('constant', elements[-1][1])
         elif self.cur_type() == 'stringConstant':
             elements.append(self.advance('stringConstant'))
-            # TODO implement string constant
-            # might need to use String.new to get an instance of string
-            # and temp stack to keep track of this instance
+            self.writer.write_push('constant', 3)
+            # note that both new and appendChar return the string
+            # so we don't need to save the instance onto temp variable
+            self.writer.write_call('String.new', 1)
+            for char in elements[-1][1]:
+                self.writer.write_push('constant', ord(char))
+                self.writer.write_call('String.appendChar', 2)
         elif self.cur_token() in keyword_constants:
             elements.append(self.advance('keyword', keyword_constants))
+            constant = elements[-1][1]
+            if constant == 'true':
+                self.writer.write_push('constant', -1)
+            elif constant in {'false', 'null'}:
+                self.writer.write_push('constant', 0)
+            else:
+                self.writer.write_push('this', 0)
         elif self.cur_type() == 'identifier':
             elements.append(self.advance('identifier'))
+            name = elements[-1][1]
+
             if self.cur_token() == '[':
                 elements.append(self.advance('symbol',{'['}))
                 elements.append(self.compile_expression())
                 elements.append(self.advance('symbol',{']'}))
+                # TODO access array, can use same procedure as compile let
             elif self.cur_token() == '(':
                 elements.append(self.advance('symbol',{'('}))
                 elements.append(self.compile_expression_list())
@@ -358,6 +373,10 @@ class Parser:
                 elements.append(self.advance('symbol',{'('}))
                 elements.append(self.compile_expression_list())
                 elements.append(self.advance('symbol',{')'}))
+            else:
+                segment = type2segment[self.symbols.type_of(name)]
+                index = self.symbols.index_of(name)
+                self.writer.write_push(segment, index)
         elif self.cur_token() == '(':
             elements.append(self.advance('symbol',{'('}))
             elements.append(self.compile_expression())
