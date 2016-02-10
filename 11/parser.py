@@ -6,7 +6,7 @@ class NoMatch(Exception):
 
 operators = {'+','-','*','/','&','|','<','>','=','~'}
 keyword_constants = {'true','false','null','this'}
-type2segment = {
+kind2segment = {
         'static': 'static',
         'field': 'this',
         'arg': 'argument',
@@ -224,15 +224,15 @@ class Parser:
             elements.append(self.advance('symbol', {'['}))
             elements.append(self.compile_expression())
             elements.append(self.advance('symbol', {']'}))
-        stack = self.writer.getvalue()
+        stack = self.writer.out.getvalue()
         self._use_orig_writer()
 
         elements.append(self.advance('symbol', {'='}))
         elements.append(self.compile_expression())
         elements.append(self.advance('symbol', {';'}))
 
-        type = self.symbols.type_of(name)
-        segment = type2segment[type]
+        kind = self.symbols.kind_of(name)
+        segment = kind2segment[kind]
         index = self.symbols.index_of(name)
         # book (pg. 229) actually didn't defer stack
         # but don't think it will work for situations like let x[0] = x[1]
@@ -359,14 +359,22 @@ class Parser:
             name = elements[-1][1]
 
             if self.cur_token() == '[':
+                segment = kind2segment[self.symbols.kind_of(name)]
+                index = self.symbols.index_of(name)
+                self.writer.write_push(segment, index)
+
                 elements.append(self.advance('symbol',{'['}))
                 elements.append(self.compile_expression())
                 elements.append(self.advance('symbol',{']'}))
-                # TODO access array, can use same procedure as compile let
+
+                self.writer.write_arithmetic('add')
+                self.writer.write_pop('pointer', 1)
+                self.writer.write_pop('that', 0)
             elif self.cur_token() == '(':
                 elements.append(self.advance('symbol',{'('}))
                 elements.append(self.compile_expression_list())
                 elements.append(self.advance('symbol',{')'}))
+                # TODO
             elif self.cur_token() == '.':
                 elements.append(self.advance('symbol',{'.'}))
                 elements.append(self.advance('identifier'))
@@ -374,7 +382,7 @@ class Parser:
                 elements.append(self.compile_expression_list())
                 elements.append(self.advance('symbol',{')'}))
             else:
-                segment = type2segment[self.symbols.type_of(name)]
+                segment = kind2segment[self.symbols.kind_of(name)]
                 index = self.symbols.index_of(name)
                 self.writer.write_push(segment, index)
         elif self.cur_token() == '(':

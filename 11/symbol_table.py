@@ -25,10 +25,10 @@ class SymbolTable:
         return self.type_count[kind]+1
 
     def kind_of(self, name):
-        return self.subroutine_table.get(name, self.class_table[name])['kind']
+        return self.subroutine_table.get(name, self.class_table.get(name))['kind']
 
     def type_of(self, name):
-        return self.subroutine_table.get(name, self.class_table[name])['type']
+        return self.subroutine_table.get(name, self.class_table.get(name))['type']
 
     def index_of(self, name):
-        return self.subroutine_table.get(name, self.class_table[name])['index']
+        return self.subroutine_table.get(name, self.class_table.get(name))['index']
