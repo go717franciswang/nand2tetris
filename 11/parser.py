@@ -371,21 +371,29 @@ class Parser:
                 self.writer.write_pop('pointer', 1)
                 self.writer.write_pop('that', 0)
             elif self.cur_token() == '(':
+                # TODO might need to push self onto the stack
                 elements.append(self.advance('symbol',{'('}))
                 elements.append(self.compile_expression_list())
                 elements.append(self.advance('symbol',{')'}))
-                # TODO
+
+                func_name = '%s.%s' % (self.module_name, name)
+                self.writer.write_call(func_name, self.cur_nargs)
             elif self.cur_token() == '.':
                 elements.append(self.advance('symbol',{'.'}))
                 elements.append(self.advance('identifier'))
+                func_name = '%s.%s' % (name, elements[-1][1])
+                # TODO might need to push instance onto the stack
+                # depending on whether it is an instance or class
                 elements.append(self.advance('symbol',{'('}))
                 elements.append(self.compile_expression_list())
                 elements.append(self.advance('symbol',{')'}))
+                self.writer.write_call(func_name, self.cur_nargs)
             else:
                 segment = kind2segment[self.symbols.kind_of(name)]
                 index = self.symbols.index_of(name)
                 self.writer.write_push(segment, index)
         elif self.cur_token() == '(':
+            # TODO: implement here next
             elements.append(self.advance('symbol',{'('}))
             elements.append(self.compile_expression())
             elements.append(self.advance('symbol',{')'}))
@@ -400,12 +408,15 @@ class Parser:
 
     def compile_expression_list(self):
         elements = []
-        self.cur_nargs = 0
+        # set up local variable for nargs instead of using self.cur_nargs
+        # because inner expression might change self.cur_nargs
+        nargs = 0 
         if self.cur_token() != ')':
             elements.append(self.compile_expression())
-            self.cur_nargs += 1
+            nargs += 1
             while self.cur_token() == ',':
                 elements.append(self.advance('symbol', {','}))
                 elements.append(self.compile_expression())
-                self.cur_nargs += 1
+                nargs += 1
+        self.cur_nargs = nargs
         return ('expressionList', elements)
