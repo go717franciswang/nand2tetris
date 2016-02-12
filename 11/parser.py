@@ -27,6 +27,8 @@ operator2func = {
         '/': 'Math.divide'
         }
 
+# Jack OS spec: pg. 266
+
 class Parser:
     index = 0
     cur_func_name = None
@@ -98,10 +100,23 @@ class Parser:
         self.symbols.start_subroutine()
         elements = []
         elements.append(self.advance('keyword', {'constructor','function','method'}))
+        function_type = elements[-1][1]
+        if function_type == 'constructor':
+            self.writer.write_push('constant', self.symbols.var_count('field'))
+            self.writer.write_call('Memory.alloca', 1)
+            self.writer.write_pop('pointer', 0)
+        elif function_type == 'method':
+            self.writer.write_push('argument', 0)
+            self.writer.write_pop('pointer', 0)
+
         try:
             elements.append(self.advance('keyword', {'void','int','char','boolean'}))
         except NoMatch as e:
             elements.append(self.advance('identifier'))
+        return_type = elements[-1][1]
+        # TODO do this next
+        #      void return 0
+        #      caller must pop the 0 in do statement
         elements.append(self.advance('identifier'))
         self.cur_func_name = elements[-1][1]
 
