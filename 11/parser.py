@@ -267,7 +267,7 @@ class Parser:
         elements.append(self.compile_expression())
         elements.append(self.advance('symbol', {')'}))
 
-        self.writer.write_arithmetic('neg')
+        self.writer.write_arithmetic('not')
         self.writer.write_if(end_label)
 
         elements.append(self.advance('symbol', {'{'}))
@@ -295,7 +295,7 @@ class Parser:
         elements.append(self.compile_expression())
 
         
-        self.writer.write_arithmetic('neg')
+        self.writer.write_arithmetic('not')
         label = self._gen_label()
         self.writer.write_if(label)
 
@@ -393,13 +393,17 @@ class Parser:
                 index = self.symbols.index_of(name)
                 self.writer.write_push(segment, index)
         elif self.cur_token() == '(':
-            # TODO: implement here next
             elements.append(self.advance('symbol',{'('}))
             elements.append(self.compile_expression())
             elements.append(self.advance('symbol',{')'}))
         elif self.cur_token() in {'-','~'}:
             elements.append(self.advance('symbol',{'-','~'}))
+            symbol = elements[-1][1]
             elements.append(self.compile_term())
+            if symbol == '-':
+                self.writer.write_arithmetic('neg')
+            else:
+                self.writer.write_arithmetic('not')
         else:
             raise NoMatch()
             # raise Exception(self.tokens[self.index-5:self.index+1])
