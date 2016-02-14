@@ -377,11 +377,12 @@ class Parser:
             self.writer.write_push('constant', elements[-1][1])
         elif self.cur_type() == 'stringConstant':
             elements.append(self.advance('stringConstant'))
-            self.writer.write_push('constant', 3)
+            string = elements[-1][1]
+            self.writer.write_push('constant', len(string))
             # note that both new and appendChar return the string
             # so we don't need to save the instance onto temp variable
             self.writer.write_call('String.new', 1)
-            for char in elements[-1][1]:
+            for char in string:
                 self.writer.write_push('constant', ord(char))
                 self.writer.write_call('String.appendChar', 2)
         elif self.cur_token() in keyword_constants:
