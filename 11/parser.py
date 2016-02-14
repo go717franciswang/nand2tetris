@@ -381,7 +381,9 @@ class Parser:
             elements.append(self.advance('keyword', keyword_constants))
             constant = elements[-1][1]
             if constant == 'true':
-                self.writer.write_push('constant', -1)
+                self.writer.write_push('constant', 0)
+                self.writer.write_push('constant', 1)
+                self.writer.write_arithmetic('sub')
             elif constant in {'false', 'null'}:
                 self.writer.write_push('constant', 0)
             else:
