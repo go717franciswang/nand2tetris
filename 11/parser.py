@@ -410,7 +410,7 @@ class Parser:
 
                 self.writer.write_arithmetic('add')
                 self.writer.write_pop('pointer', 1)
-                self.writer.write_pop('that', 0)
+                self.writer.write_push('that', 0)
             elif self.cur_token() == '(':
                 self.writer.write_push('pointer', 0)
                 elements.append(self.advance('symbol',{'('}))
