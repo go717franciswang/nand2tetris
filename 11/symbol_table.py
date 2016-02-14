@@ -22,7 +22,7 @@ class SymbolTable:
         self.type_count[kind] += 1
 
     def var_count(self, kind):
-        return self.type_count[kind]+1
+        return self.type_count[kind]
 
     def kind_of(self, name):
         return self.subroutine_table.get(name, self.class_table.get(name))['kind']

@@ -325,6 +325,8 @@ class Parser:
         if self.cur_token() != ';':
             elements.append(self.compile_expression())
         elements.append(self.advance('symbol', {';'}))
+        # TODO: don't think it handles return x
+        # correctly here
         self.writer.write_return()
         return ('returnStatement', elements)
 
