@@ -101,9 +101,13 @@ class Parser:
         elements = []
         elements.append(self.advance('keyword', {'constructor','function','method'}))
         function_type = elements[-1][1]
+
+        # _use_orig_writer() is called in compile_subroutine_body
+        # should find a more elegant way to do this
+        self._use_temp_writer()
         if function_type == 'constructor':
             self.writer.write_push('constant', self.symbols.var_count('field'))
-            self.writer.write_call('Memory.alloca', 1)
+            self.writer.write_call('Memory.alloc', 1)
             self.writer.write_pop('pointer', 0)
         elif function_type == 'method':
             self.writer.write_push('argument', 0)
@@ -154,12 +158,14 @@ class Parser:
     def compile_subroutine_body(self):
         elements = []
         elements.append(self.advance('symbol', {'{'}))
-        nlocals = 0
+        self.cur_nlocals = 0
         while self.cur_token() == 'var':
-            nlocals += 1
             elements.append(self.compile_var_dec())
         func_name = '%s.%s' % (self.module_name, self.cur_func_name)
-        self.writer.write_function(func_name, nlocals)
+        stack = self.writer.out.getvalue()
+        self._use_orig_writer()
+        self.writer.write_function(func_name, self.cur_nlocals)
+        self.writer.write_content(stack)
         elements.append(self.compile_statements())
         elements.append(self.advance('symbol', {'}'}))
         return ('subroutineBody', elements)
@@ -194,12 +200,14 @@ class Parser:
         elements.append(self.advance('identifier'))
         name = elements[-1][1]
         self.symbols.define(name, type, 'var')
+        self.cur_nlocals += 1
 
         while self.cur_token() == ',':
             elements.append(self.advance('symbol', {','}))
             elements.append(self.advance('identifier'))
             name = elements[-1][1]
             self.symbols.define(name, type, 'var')
+            self.cur_nlocals += 1
 
         elements.append(self.advance('symbol', {';'}))
         return ('varDec', elements)
@@ -381,9 +389,8 @@ class Parser:
             elements.append(self.advance('keyword', keyword_constants))
             constant = elements[-1][1]
             if constant == 'true':
-                self.writer.write_push('constant', 0)
                 self.writer.write_push('constant', 1)
-                self.writer.write_arithmetic('sub')
+                self.writer.write_arithmetic('neg')
             elif constant in {'false', 'null'}:
                 self.writer.write_push('constant', 0)
             else:
