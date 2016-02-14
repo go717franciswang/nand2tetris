@@ -342,6 +342,7 @@ class Parser:
         elements.append(self.advance('symbol', {'{'}))
         elements.append(self.compile_statements())
         elements.append(self.advance('symbol', {'}'}))
+        # TODO: forgot to handle else
         if self.cur_token() == 'else':
             elements.append(self.advance('keyword', {'else'}))
             elements.append(self.advance('symbol', {'{'}))
