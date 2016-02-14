@@ -114,9 +114,6 @@ class Parser:
         except NoMatch as e:
             elements.append(self.advance('identifier'))
         return_type = elements[-1][1]
-        # TODO do this next
-        #      void return 0
-        #      caller must pop the 0 in do statement
         elements.append(self.advance('identifier'))
         self.cur_func_name = elements[-1][1]
 
@@ -124,6 +121,9 @@ class Parser:
         elements.append(self.compile_parameter_list())
         elements.append(self.advance('symbol', {')'}))
         elements.append(self.compile_subroutine_body())
+
+        if return_type == 'void':
+            self.writer.write_push('constant', 0)
 
         return ('subroutineDec', elements)
 
@@ -208,11 +208,20 @@ class Parser:
         elements.append(self.advance('keyword', {'do'}))
         elements.append(self.advance('identifier'))
         func_or_module_name = elements[-1][1]
+        instance = None
 
         if self.cur_token() == '.':
             elements.append(self.advance('symbol', {'.'}))
             elements.append(self.advance('identifier'))
-            module_name = func_or_module_name 
+            # TODO: how to determine if the thing we are calling 
+            # is a function or method without doing a 2-pass?
+            if func_or_module_name[0].islower():
+                module_name = self.symbols.type_of(func_or_module_name)
+                if self.symbols.kind_of(func_or_module_name) == 'field':
+                    index = self.symbols.index_of(func_or_module_name)
+                    self.writer.write_push('local', index)
+            else:
+                module_name = func_or_module_name
             func_name = elements[-1][1]
         else:
             module_name = self.module_name
@@ -226,6 +235,7 @@ class Parser:
         name = '%s.%s' % (module_name, func_name)
         # TODO: check if we need to add 1 to cur_nargs for methods
         self.writer.write_call(name, self.cur_nargs)
+        self.writer.write_pop('temp', 0)
         return ('doStatement', elements)
 
     def compile_let(self):
