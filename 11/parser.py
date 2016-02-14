@@ -126,9 +126,6 @@ class Parser:
         elements.append(self.advance('symbol', {')'}))
         elements.append(self.compile_subroutine_body())
 
-        if return_type == 'void':
-            self.writer.write_push('constant', 0)
-
         return ('subroutineDec', elements)
 
     def compile_parameter_list(self):
@@ -322,11 +319,11 @@ class Parser:
     def compile_return(self):
         elements = []
         elements.append(self.advance('keyword', {'return'}))
-        if self.cur_token() != ';':
+        if self.cur_token() == ';':
+            self.writer.write_push('constant', 0)
+        else:
             elements.append(self.compile_expression())
         elements.append(self.advance('symbol', {';'}))
-        # TODO: don't think it handles return x
-        # correctly here
         self.writer.write_return()
         return ('returnStatement', elements)
 
@@ -396,7 +393,7 @@ class Parser:
             elif constant in {'false', 'null'}:
                 self.writer.write_push('constant', 0)
             else:
-                self.writer.write_push('this', 0)
+                self.writer.write_push('pointer', 0)
         elif self.cur_type() == 'identifier':
             elements.append(self.advance('identifier'))
             name = elements[-1][1]
