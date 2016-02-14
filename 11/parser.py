@@ -332,23 +332,24 @@ class Parser:
         elements.append(self.advance('keyword', {'if'}))
         elements.append(self.advance('symbol', {'('}))
         elements.append(self.compile_expression())
-
-        
         self.writer.write_arithmetic('not')
-        label = self._gen_label()
-        self.writer.write_if(label)
+        else_label = self._gen_label()
+        end_label = self._gen_label()
 
+        self.writer.write_if(else_label)
         elements.append(self.advance('symbol', {')'}))
         elements.append(self.advance('symbol', {'{'}))
         elements.append(self.compile_statements())
         elements.append(self.advance('symbol', {'}'}))
-        # TODO: forgot to handle else
+        self.writer.write_goto(end_label)
+
+        self.writer.write_label(else_label)
         if self.cur_token() == 'else':
             elements.append(self.advance('keyword', {'else'}))
             elements.append(self.advance('symbol', {'{'}))
             elements.append(self.compile_statements())
             elements.append(self.advance('symbol', {'}'}))
-        self.writer.write_label(label)
+        self.writer.write_label(end_label)
         return ('ifStatement', elements)
 
     def _gen_label(self):
