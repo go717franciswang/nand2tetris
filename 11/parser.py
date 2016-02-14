@@ -208,24 +208,28 @@ class Parser:
         elements.append(self.advance('keyword', {'do'}))
         elements.append(self.advance('identifier'))
         func_or_module_name = elements[-1][1]
-        instance = None
+        is_method = True
 
         if self.cur_token() == '.':
             elements.append(self.advance('symbol', {'.'}))
             elements.append(self.advance('identifier'))
-            # TODO: how to determine if the thing we are calling 
-            # is a function or method without doing a 2-pass?
+            # pg.189: function calls always use full name (i.e. classname.function_name)
+            # we can use this fact to distinguish function and method
             if func_or_module_name[0].islower():
-                module_name = self.symbols.type_of(func_or_module_name)
-                if self.symbols.kind_of(func_or_module_name) == 'field':
-                    index = self.symbols.index_of(func_or_module_name)
-                    self.writer.write_push('local', index)
+                instance_name = func_or_module_name
+                module_name = self.symbols.type_of(instance_name)
+                index = self.symbols.index_of(instance_name)
+                kind = self.symbols.kind_of(instance_name)
+                segment = kind2segment[kind]
+                self.writer.write_push(segment, index)
             else:
                 module_name = func_or_module_name
+                is_method = False
             func_name = elements[-1][1]
         else:
             module_name = self.module_name
             func_name = func_or_module_name
+            self.writer.write_push('pointer', 0)
 
         elements.append(self.advance('symbol', {'('}))
         elements.append(self.compile_expression_list())
@@ -233,8 +237,11 @@ class Parser:
         elements.append(self.advance('symbol', {';'}))
 
         name = '%s.%s' % (module_name, func_name)
-        # TODO: check if we need to add 1 to cur_nargs for methods
-        self.writer.write_call(name, self.cur_nargs)
+        nargs = self.cur_nargs
+        if is_method:
+            nargs += 1
+
+        self.writer.write_call(name, nargs)
         self.writer.write_pop('temp', 0)
         return ('doStatement', elements)
 
@@ -309,7 +316,6 @@ class Parser:
         if self.cur_token() != ';':
             elements.append(self.compile_expression())
         elements.append(self.advance('symbol', {';'}))
-        #TODO: might need to return 0 for void type
         self.writer.write_return()
         return ('returnStatement', elements)
 
@@ -396,23 +402,36 @@ class Parser:
                 self.writer.write_pop('pointer', 1)
                 self.writer.write_pop('that', 0)
             elif self.cur_token() == '(':
-                # TODO might need to push self onto the stack
+                self.writer.write_push('pointer', 0)
                 elements.append(self.advance('symbol',{'('}))
                 elements.append(self.compile_expression_list())
                 elements.append(self.advance('symbol',{')'}))
 
                 func_name = '%s.%s' % (self.module_name, name)
-                self.writer.write_call(func_name, self.cur_nargs)
+                self.writer.write_call(func_name, self.cur_nargs+1)
             elif self.cur_token() == '.':
                 elements.append(self.advance('symbol',{'.'}))
                 elements.append(self.advance('identifier'))
-                func_name = '%s.%s' % (name, elements[-1][1])
-                # TODO might need to push instance onto the stack
-                # depending on whether it is an instance or class
+                is_method = True
+                if name[0].islower():
+                    module_name = self.symbols.type_of(name)
+                    index = self.symbols.index_of(name)
+                    kind = self.symbols.kind_of(name)
+                    segment = kind2segment[kind]
+                    self.writer.write_push(segment, index)
+                else:
+                    module_name = name
+                    is_method = False
+                    
+                func_name = '%s.%s' % (module_name, elements[-1][1])
                 elements.append(self.advance('symbol',{'('}))
                 elements.append(self.compile_expression_list())
                 elements.append(self.advance('symbol',{')'}))
-                self.writer.write_call(func_name, self.cur_nargs)
+
+                nargs = self.cur_nargs
+                if is_method:
+                    nargs += 1
+                self.writer.write_call(func_name, nargs)
             else:
                 segment = kind2segment[self.symbols.kind_of(name)]
                 index = self.symbols.index_of(name)
