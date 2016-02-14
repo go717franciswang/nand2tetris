@@ -158,7 +158,8 @@ class Parser:
         while self.cur_token() == 'var':
             nlocals += 1
             elements.append(self.compile_var_dec())
-        self.writer.write_function(self.cur_func_name, nlocals)
+        func_name = '%s.%s' % (self.module_name, self.cur_func_name)
+        self.writer.write_function(func_name, nlocals)
         elements.append(self.compile_statements())
         elements.append(self.advance('symbol', {'}'}))
         return ('subroutineBody', elements)
