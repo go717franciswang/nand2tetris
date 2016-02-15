@@ -97,10 +97,13 @@ class Parser:
         return ('classVarDec', elements)
 
     def compile_subroutine(self):
-        self.symbols.start_subroutine()
         elements = []
         elements.append(self.advance('keyword', {'constructor','function','method'}))
         function_type = elements[-1][1]
+        if function_type == 'method':
+            self.symbols.start_subroutine(is_method=True)
+        else:
+            self.symbols.start_subroutine(is_method=False)
 
         # _use_orig_writer() is called in compile_subroutine_body
         # should find a more elegant way to do this
@@ -224,7 +227,6 @@ class Parser:
             if func_or_module_name[0].islower():
                 instance_name = func_or_module_name
                 module_name = self.symbols.type_of(instance_name)
-                # TODO: when kind is argument, we should add 1 to index
                 index = self.symbols.index_of(instance_name)
                 kind = self.symbols.kind_of(instance_name)
                 segment = kind2segment[kind]
@@ -272,7 +274,6 @@ class Parser:
 
         kind = self.symbols.kind_of(name)
         segment = kind2segment[kind]
-        # TODO: when kind is argument, add 1 to index
         index = self.symbols.index_of(name)
         # book (pg. 229) actually didn't defer stack
         # but don't think it will work for situations like let x[0] = x[1]
@@ -405,7 +406,6 @@ class Parser:
 
             if self.cur_token() == '[':
                 segment = kind2segment[self.symbols.kind_of(name)]
-                # TODO: when kind is argument, add 1 to index
                 index = self.symbols.index_of(name)
                 self.writer.write_push(segment, index)
 
@@ -430,7 +430,6 @@ class Parser:
                 is_method = True
                 if name[0].islower():
                     module_name = self.symbols.type_of(name)
-                    # TODO: when kind is argument, add 1 to index
                     index = self.symbols.index_of(name)
                     kind = self.symbols.kind_of(name)
                     segment = kind2segment[kind]
@@ -450,7 +449,6 @@ class Parser:
                 self.writer.write_call(func_name, nargs)
             else:
                 segment = kind2segment[self.symbols.kind_of(name)]
-                # TODO: when kind is argument, add 1 to index
                 index = self.symbols.index_of(name)
                 self.writer.write_push(segment, index)
         elif self.cur_token() == '(':
