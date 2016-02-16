@@ -7,9 +7,20 @@
  * A basic math library.
  */
 class Math {
+    static Array twoToThe;
 
     /** Initializes the library. */
     function void init() {
+        var int j;
+        let twoToThe = Array.new(16);
+        let twoToThe[0] = 1;
+        let j = 1;
+        while (j < 16) {
+            twoToThe[j] = twoToThe[j-1]*2;
+            j = j + 1;
+        }
+
+        return;
     }
 
     /** Returns the absolute value of x. */
@@ -34,5 +45,9 @@ class Math {
 
     /** Returns the smaller number. */
     function int min(int a, int b) {
+    }
+
+    function boolean bit(int x, int j) {
+        return twoToThe[j] & x;
     }
 }
