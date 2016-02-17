@@ -16,8 +16,8 @@ class Math {
         let twoToThe[0] = 1;
         let j = 1;
         while (j < 16) {
-            twoToThe[j] = twoToThe[j-1]*2;
-            j = j + 1;
+            let twoToThe[j] = twoToThe[j-1]+twoToThe[j-1];
+            let j = j + 1;
         }
 
         return;
@@ -40,12 +40,12 @@ class Math {
         let sum = 0;
         let j = 0;
 
-        while (j < 11) {
+        while (j < 16) {
             if (Math.bit(y, j)) {
-                sum = sum + shiftedX;
+                let sum = sum + shiftedX;
             }
             let j = j + 1;
-            shiftedX = shiftedX + shiftedX;
+            let shiftedX = shiftedX + shiftedX;
         }
 
         return sum;
@@ -78,6 +78,6 @@ class Math {
     }
 
     function boolean bit(int x, int j) {
-        return twoToThe[j] & x;
+        return ~((twoToThe[j] & x) = 0);
     }
 }
