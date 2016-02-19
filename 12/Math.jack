@@ -53,7 +53,26 @@ class Math {
 
     /** Returns the integer part of x/y. */
     function int divide(int x, int y) {
-        return 0;
+        var int q;
+        var int m;
+
+        if (x < 0) {
+            return -(Math.divide(-x, y));
+        }
+
+        if (y < 0) {
+            return -(Math.divide(x, -y));
+        }
+
+        if (y > x) {
+            return 0;
+        }
+        let q = Math.divide(x, y+y);
+        let m = Math.multiply(q*y);
+        if ((x-m-m) < y) {
+            return q+q;
+        }
+        return q+q+1;
     }
 
     /** Returns the integer part of the square root of x. */
