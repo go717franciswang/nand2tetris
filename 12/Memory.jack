@@ -7,13 +7,14 @@
  * Memory operations library.
  */ 
 class Memory {
-    static Array freeList;
+    static int freeList;
 
     /** Initializes memory parameters. */
     function void init() {
-        let freeList = 2048;            // begin of heap
-        // let freeList[0] = 16383 - 2048; // length of heap
-        // let freeList[1] = null;         // next freeList
+        var Array memory;
+        let freeList = 2048;
+        let memory[freeList] = 16383 - 2048; // length of heap
+        let memory[freeList+1] = null;       // next freeList
         return;
     }
 
@@ -36,10 +37,34 @@ class Memory {
     /** finds and allocates from the heap a memory block of the 
      *  specified size and returns a reference to its base address. */
     function int alloc(int size) {
-        var int free;
-        let free = freeList;
-        let freeList = freeList + size;
-        return free;
+        var int next, prev;
+        var Array memory;
+        let prev = 0;
+        let next = freeList;
+        while (memory[next] < size+1) {
+            let prev = next;
+            let next = memory[next+1];
+        }
+
+        if (prev = 0) {
+            let freeList = freeList + size + 1;
+            let memory[freeList] = memory[next] - size - 1;
+            let memory[freeList+1] = null;
+            let memory[next] = size + 1;
+            return next + 1;
+        }
+
+        // enough to split this block into 2
+        if (memory[next] > size + 4) {
+            let memory[prev+1] = next + size + 1;
+            let memory[next+size+1] = memory[next] - size - 1;
+            let memory[next+size+2] = memory[next+1];
+            let memory[next] = size + 1;
+            return next + 1;
+        }
+
+        let memory[prev+1] = memory[next+1];
+        return next + 1;
     }
 
     /** De-allocates the given object and frees its space. */
