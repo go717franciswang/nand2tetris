@@ -39,23 +39,30 @@ class Memory {
     function int alloc(int size) {
         var int next, prev;
         var Array memory;
-        let prev = 0;
-        let next = freeList;
+        
+        if (memory[freeList] > size) {
+            let next = freeList;
+
+            if (memory[freeList] > (size + 4)) {
+                let freeList = freeList + size + 1;
+                let memory[freeList] = memory[next] - size - 1;
+                let memory[freeList+1] = memory[next+1];
+                let memory[next] = size + 1;
+            } else {
+                let freeList = memory[freeList+1];
+            }
+            return next + 1;
+        }
+
+        let prev = freeList;
+        let next = memory[freeList+1];
         while (memory[next] < size+1) {
             let prev = next;
             let next = memory[next+1];
         }
 
-        if (prev = 0) {
-            let freeList = freeList + size + 1;
-            let memory[freeList] = memory[next] - size - 1;
-            let memory[freeList+1] = null;
-            let memory[next] = size + 1;
-            return next + 1;
-        }
-
         // enough to split this block into 2
-        if (memory[next] > size + 4) {
+        if (memory[next] > (size + 4)) {
             let memory[prev+1] = next + size + 1;
             let memory[next+size+1] = memory[next] - size - 1;
             let memory[next+size+2] = memory[next+1];
@@ -69,6 +76,25 @@ class Memory {
 
     /** De-allocates the given object and frees its space. */
     function void deAlloc(int object) {
+        var int block, prev, next;
+        var Array memory;
+        let block = object - 1;
+
+        if (block < freeList) {
+            let memory[block+1] = freeList;
+            let freeList = block;
+            return;
+        }
+
+        let prev = freeList;
+        let next = memory[freeList+1];
+        while (~(next = 0 | next > block)) {
+            let prev = next;
+            let next = memory[next+1];
+        }
+
+        let memory[prev+1] = block;
+        let memory[block+1] = next;
         return;
     }    
 }
