@@ -19,6 +19,7 @@ class Output {
     function void init() {
         let cursorR = 0;
         let cursorC = 0;
+        return;
     }
 
     // Initalizes the character map array
@@ -182,13 +183,13 @@ class Output {
      *  column forward. */
     function void printChar(char c) {
         var Array map;
-        var int i;
-        let map = getMap(c);
+        var int i, bitR, bitC, address, line;
+        let map = Output.getMap(c);
         let i = 0;
         while (i < 11) {
             let bitR = cursorR * 11 + i;
             let bitC = cursorC / 2;
-            let address = 16384 + bitR * 32 + bitC;
+            let address = 16384 + (bitR * 32) + bitC;
             let line = Memory.peek(address);
 
             if (bitC * 2 = cursorC) {
@@ -201,24 +202,48 @@ class Output {
             do Memory.poke(address, line);
             let i = i + 1;
         }
+
+        let cursorC = cursorC + 1;
+        if (cursorC > 63) {
+            let cursorC = 0;
+            let cursorR = cursorR + 1;
+        }
         return;
     }
 
     /** Prints s starting at the cursor location, and advances the
      *  cursor appropriately. */
     function void printString(String s) {
+        var int l, i;
+        let l = s.length();
+        let i = 0;
+        while (i < l) {
+            do Output.printChar(s.charAt(i));
+            let i = i + 1;
+        }
+        return;
     }
 
     /** Prints i starting at the cursor location, and advances the
      *  cursor appropriately. */
     function void printInt(int i) {
+        var String s;
+        let s = String.new(6);
+        do s.setInt(i);
+        do Output.printString(s);
+        return;
     }
 
     /** Advances the cursor to the beginning of the next line. */
     function void println() {
+        let cursorC = 0;
+        let cursorR = cursorR + 1;
+        return;
     }
 
     /** Moves the cursor one column back. */
     function void backSpace() {
+        let cursorC = cursorC - 1;
+        return;
     }
 }
