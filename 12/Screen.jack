@@ -7,22 +7,55 @@
  * Graphic screen library.
  */
 class Screen {
+    static boolean color;
+    static Array twoToThe;
 
     /** Initializes the Screen. */
     function void init() {
+        let color = true;
+        let twoToThe = Array.new(16);
+        let twoToThe[0] = 1;
+        let j = 1;
+        while (j < 16) {
+            let twoToThe[j] = twoToThe[j-1]+twoToThe[j-1];
+            let j = j + 1;
+        }
+        return;
     }
 
     /** Erases the whole screen. */
     function void clearScreen() {
+        var int i;
+        let i = 0;
+        while (i < 8192) {
+            do Memory.poke(16384 + i, 0);
+            let i = i + 1;
+        }
+        return;
     }
 
     /** Sets the color to be used in further draw commands
      *  where white = false, black = true. */
     function void setColor(boolean b) {
+        let color = b;
+        return;
     }
 
     /** Draws the (x, y) pixel. */
     function void drawPixel(int x, int y) {
+        let bitR = y;
+        let bitC = x / 16;
+        let bit = x - (x * 16);
+        let address = 16384 + (bitR * 32) + bitC;
+        let line = Memory.peek(address);
+        let mask = ~twoToThe[bit];
+        if (color) {
+            let line = (line & mask) | twoToThe[bit];
+        } else {
+            let line = ~(~(line & mask) | mask);
+        }
+        do Memory.poke(address, line);
+        return;
     }
 
     /** Draws a line from (x1, y1) to (x2, y2). */
