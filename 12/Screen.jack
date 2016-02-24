@@ -60,6 +60,39 @@ class Screen {
 
     /** Draws a line from (x1, y1) to (x2, y2). */
     function void drawLine(int x1, int y1, int x2, int y2) {
+        var int dx, dy, a, b, adyMinusbdx, sign;
+        if (x1 < x2) {
+            do Screen.drawLine(x2, y2, x1, y1);
+            return;
+        }
+
+        let dx = x2 - x1;
+        let dy = y2 - y1;
+        let a = 0;
+        let b = 0;
+
+        if (dx = 0) {
+            while (~(b = dy)) {
+                do Screen.drawPixel(x1, y1+b);
+                let a = a + 1;
+            }
+        }
+
+        let sign = 1;
+        if (dy < 0) {
+            let sign = -1;
+        }
+        while (~((a = dx) & (b = dy))) {
+            do Screen.drawPixel(x1+a, y1+b);
+            if (adyMinusbdx < 0) {
+                let a = a + 1;
+                let adyMinusbdx = adyMinusbdx + dy;
+            } else {
+                let b = b + sign;
+                let adyMinusbdx = adyMinusbdx - dx;
+            }
+        }
+        return;
     }
 
     /** Draws a filled rectangle where the top left corner
