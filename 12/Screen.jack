@@ -98,6 +98,17 @@ class Screen {
     /** Draws a filled rectangle where the top left corner
      *  is (x1, y1) and the bottom right corner is (x2, y2). */
     function void drawRectangle(int x1, int y1, int x2, int y2) {
+        var int x, y;
+        let y = y1;
+        while (y < (y2+1)) {
+            let x = x1;
+            while (x < (x2+1)) {
+                do Screen.drawPixel(x, y);
+                let x = x + 1;
+            }
+            let y = y + 1;
+        }
+        return;
     }
 
     /** Draws a filled circle of radius r around (cx, cy). */
