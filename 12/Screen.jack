@@ -47,14 +47,14 @@ class Screen {
         var int bitR, bitC, bit, address, line, mask;
         let bitR = y;
         let bitC = x / 16;
-        let bit = x - (x * 16);
+        let bit = x - (bitC * 16);
         let address = 16384 + (bitR * 32) + bitC;
         let line = Memory.peek(address);
         let mask = ~twoToThe[bit];
         if (color) {
             let line = (line & mask) | twoToThe[bit];
         } else {
-            let line = ~(~(line & mask) | mask);
+            let line = line & mask;
         }
         do Memory.poke(address, line);
         return;
@@ -63,7 +63,7 @@ class Screen {
     /** Draws a line from (x1, y1) to (x2, y2). */
     function void drawLine(int x1, int y1, int x2, int y2) {
         var int dx, dy, a, b, adyMinusbdx, sign;
-        if (x1 < x2) {
+        if (x1 > x2) {
             do Screen.drawLine(x2, y2, x1, y1);
             return;
         }
@@ -84,9 +84,10 @@ class Screen {
         if (dy < 0) {
             let sign = -1;
         }
+        let adyMinusbdx = 0;
         while (~((a = dx) & (b = dy))) {
             do Screen.drawPixel(x1+a, y1+b);
-            if (adyMinusbdx < 0) {
+            if (adyMinusbdx < 1) {
                 let a = a + 1;
                 let adyMinusbdx = adyMinusbdx + dy;
             } else {
@@ -121,6 +122,7 @@ class Screen {
         while (dy < (r + 1)) {
             let tmp = Math.sqrt(rSquared - (dy*dy));
             do Screen.drawLine(cx-tmp, cy+dy, cx+tmp, cy+dy);
+            let dy = dy + 1;
         }
         return;
     }
