@@ -12,6 +12,7 @@ class Screen {
 
     /** Initializes the Screen. */
     function void init() {
+        var int j;
         let color = true;
         let twoToThe = Array.new(16);
         let twoToThe[0] = 1;
@@ -43,6 +44,7 @@ class Screen {
 
     /** Draws the (x, y) pixel. */
     function void drawPixel(int x, int y) {
+        var int bitR, bitC, bit, address, line, mask;
         let bitR = y;
         let bitC = x / 16;
         let bit = x - (x * 16);
@@ -113,5 +115,13 @@ class Screen {
 
     /** Draws a filled circle of radius r around (cx, cy). */
     function void drawCircle(int cx, int cy, int r) {
+        var int dy, tmp, rSquared;
+        let dy = -r;
+        let rSquared = r*r;
+        while (dy < (r + 1)) {
+            let tmp = Math.sqrt(rSquared - (dy*dy));
+            do Screen.drawLine(cx-tmp, cy+dy, cx+tmp, cy+dy);
+        }
+        return;
     }
 }
