@@ -10,6 +10,7 @@ class Keyboard {
 
     /** Initializes the keyboard. */
     function void init() {
+        return;
     } 
 
     /**
@@ -33,6 +34,15 @@ class Keyboard {
      * F1 - F12 = 141 - 152
      */
     function char keyPressed() {
+        var char k;
+        let k = Memory.peek(24576);
+        if (k = 128) {
+            return String.newLine();
+        }
+        if (k = 129) {
+            return String.backSpace();
+        }
+        return k;
     }
 
     /**								
@@ -41,6 +51,18 @@ class Keyboard {
      * the key to the screen, and returns the value of the pressed key.
      */
     function char readChar() {
+        var char k1, k2;
+        let k1 = Keyboard.keyPressed();
+        while (k1 = 0) {
+            let k1 = Keyboard.keyPressed();
+        }
+
+        let k2 = k1;
+        while (k1 = k2) {
+            let k2 = Keyboard.keyPressed();
+        }
+        do Output.printChar(k1);
+        return k1;
     }
 
     /**								
@@ -48,6 +70,30 @@ class Keyboard {
      * (until a newline character) from the keyboard, and returns its value.
      */
     function String readLine(String message) {
+        var char c;
+        var int i, len;
+        var Array chars;
+        var String s;
+        do Output.printString(message);
+        let c = Keyboard.readChar();
+        let chars = Array.new(25);
+        let chars[0] = c;
+        let len = 1;
+        while (~(c = String.newLine())) {
+            let c = Keyboard.readChar();
+            let chars[len] = c;
+            let len = len + 1;
+        }
+        let len = len - 1;
+        let s = String.new(len);
+
+        let i = 0;
+        while (i < len) {
+            do s.appendChar(chars[i]);
+            let i = i + 1;
+        }
+        do chars.dispose();
+        return s;
     }   
 
     /**								
@@ -56,5 +102,8 @@ class Keyboard {
      * integer value (until the first non numeric character).
      */
     function int readInt(String message) {
+        var String s;
+        let s = Keyboard.readLine(message);
+        return s.intValue();
     }
 }
