@@ -1,0 +1,8 @@
+class Main {
+    function void main() {
+        var Tetris game;
+        let game = Tetris.new();
+        do game.run();
+        return;
+    }
+}

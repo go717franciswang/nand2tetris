@@ -1,0 +1,9 @@
+class Tetris {
+    function Tetris new() {
+        return this;
+    }
+
+    method void run() {
+        return;
+    }
+}
