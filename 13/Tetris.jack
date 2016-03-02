@@ -1,5 +1,25 @@
 class Tetris {
+    field Array board;
+    field int columnCount;
+    field int rowCount;
+
     function Tetris new() {
+        var int i, j;
+        var Array row;
+        let columnCount = 10;
+        let rowCount = 22;
+        let board = Array.new(columnCount);
+
+        let i = 0;
+        while (i < rowCount) {
+            let row = Array.new(columnCount);
+            let board[i] = row;
+            while (j < columnCount) {
+                let row[j] = false;
+                let j = j + 1;
+            }
+            let i = i + 1;
+        }
         return this;
     }
 
