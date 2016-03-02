@@ -1,4 +1,62 @@
 class Piece {
+    static Array type2matrices;
+    static Array type2variants;
+
+    function void init() {
+        let type2variants = Array.new(7);
+        let type2variants[0] = 1;
+        let type2variants[1] = 2;
+        let type2variants[2] = 2;
+        let type2variants[3] = 2;
+        let type2variants[4] = 4;
+        let type2variants[5] = 4;
+        let type2variants[6] = 4;
+
+        let type2matrices = Array.new(7);
+        let type2matrices[0] = Piece.buildO();
+        let type2matrices[1] = Piece.buildI();
+        let type2matrices[2] = Piece.buildS();
+        let type2matrices[3] = Piece.buildZ();
+        let type2matrices[4] = Piece.buildL();
+        let type2matrices[5] = Piece.buildJ();
+        let type2matrices[6] = Piece.buildT();
+    }
+
+    function Array buildO() {
+        var Array ms, m0;
+        let ms = Array.new(1);
+        let m0 = Array.new(4);
+
+        let m0[0] = 0;
+        let m0[1] = 6;
+        let m0[2] = 6;
+        let m0[3] = 0;
+        let ms[0] = m0;
+
+        return ms;
+    }
+
+    function Array buildI() {
+        var Array ms, m0, m1;
+        let ms = Array.new(1);
+        let m0 = Array.new(4);
+        let m1 = Array.new(4);
+
+        let m0[0] = 0;
+        let m0[1] = 15;
+        let m0[2] = 0;
+        let m0[3] = 0;
+        let ms[0] = m0;
+
+        let m1[0] = 4;
+        let m1[1] = 4;
+        let m1[2] = 4;
+        let m1[3] = 4;
+        let ms[1] = m1;
+
+        return ms;
+    }
+
     // TODO:
     // http://colinfahey.com/tetris/tetris_diagram_pieces_orientations_new.jpg
     function Piece new(type) {
