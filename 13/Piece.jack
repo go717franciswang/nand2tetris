@@ -1,4 +1,6 @@
 class Piece {
+    // TODO:
+    // http://colinfahey.com/tetris/tetris_diagram_pieces_orientations_new.jpg
     function Piece new(type) {
     }
 }
