@@ -26,4 +26,8 @@ class Tetris {
     method void run() {
         return;
     }
+
+    method Piece getRandomPiece() {
+        return;
+    }
 }
