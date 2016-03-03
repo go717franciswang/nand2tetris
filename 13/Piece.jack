@@ -57,6 +57,153 @@ class Piece {
         return ms;
     }
 
+    function Array buildS() {
+        var Array ms, m0, m1;
+        let ms = Array.new(1);
+        let m0 = Array.new(4);
+        let m1 = Array.new(4);
+
+        let m0[0] = 0;
+        let m0[1] = 12;
+        let m0[2] = 6;
+        let m0[3] = 0;
+        let ms[0] = m0;
+
+        let m1[0] = 4;
+        let m1[1] = 12;
+        let m1[2] = 8;
+        let m1[3] = 0;
+        let ms[1] = m1;
+
+        return ms;
+    }
+
+    function Array buildZ() {
+        var Array ms, m0, m1;
+        let ms = Array.new(1);
+        let m0 = Array.new(4);
+        let m1 = Array.new(4);
+
+        let m0[0] = 0;
+        let m0[1] = 6;
+        let m0[2] = 12;
+        let m0[3] = 0;
+        let ms[0] = m0;
+
+        let m1[0] = 8;
+        let m1[1] = 12;
+        let m1[2] = 4;
+        let m1[3] = 0;
+        let ms[1] = m1;
+
+        return ms;
+    }
+
+    function Array buildL() {
+        var Array ms, m0, m1, m2, m3;
+        let ms = Array.new(1);
+        let m0 = Array.new(4);
+        let m1 = Array.new(4);
+        let m2 = Array.new(4);
+        let m3 = Array.new(4);
+
+        let m0[0] = 0;
+        let m0[1] = 14;
+        let m0[2] = 2;
+        let m0[3] = 0;
+        let ms[0] = m0;
+
+        let m1[0] = 4;
+        let m1[1] = 4;
+        let m1[2] = 12;
+        let m1[3] = 0;
+        let ms[1] = m1;
+
+        let m2[0] = 8;
+        let m2[1] = 14;
+        let m2[2] = 0;
+        let m2[3] = 0;
+        let ms[2] = m2;
+
+        let m3[0] = 6;
+        let m3[1] = 4;
+        let m3[2] = 4;
+        let m3[3] = 0;
+        let ms[3] = m3;
+
+        return ms;
+    }
+
+    function Array buildJ() {
+        var Array ms, m0, m1, m2, m3;
+        let ms = Array.new(1);
+        let m0 = Array.new(4);
+        let m1 = Array.new(4);
+        let m2 = Array.new(4);
+        let m3 = Array.new(4);
+
+        let m0[0] = 0;
+        let m0[1] = 14;
+        let m0[2] = 8;
+        let m0[3] = 0;
+        let ms[0] = m0;
+
+        let m1[0] = 12;
+        let m1[1] = 4;
+        let m1[2] = 4;
+        let m1[3] = 0;
+        let ms[1] = m1;
+
+        let m2[0] = 2;
+        let m2[1] = 14;
+        let m2[2] = 0;
+        let m2[3] = 0;
+        let ms[2] = m2;
+
+        let m3[0] = 4;
+        let m3[1] = 4;
+        let m3[2] = 6;
+        let m3[3] = 0;
+        let ms[3] = m3;
+
+        return ms;
+    }
+
+    function Array buildO() {
+        var Array ms, m0, m1, m2, m3;
+        let ms = Array.new(1);
+        let m0 = Array.new(4);
+        let m1 = Array.new(4);
+        let m2 = Array.new(4);
+        let m3 = Array.new(4);
+
+        let m0[0] = 0;
+        let m0[1] = 14;
+        let m0[2] = 4;
+        let m0[3] = 0;
+        let ms[0] = m0;
+
+        let m1[0] = 4;
+        let m1[1] = 12;
+        let m1[2] = 4;
+        let m1[3] = 0;
+        let ms[1] = m1;
+
+        let m2[0] = 4;
+        let m2[1] = 14;
+        let m2[2] = 0;
+        let m2[3] = 0;
+        let ms[2] = m2;
+
+        let m3[0] = 4;
+        let m3[1] = 6;
+        let m3[2] = 4;
+        let m3[3] = 0;
+        let ms[3] = m3;
+
+        return ms;
+    }
+
     // TODO:
     // http://colinfahey.com/tetris/tetris_diagram_pieces_orientations_new.jpg
     function Piece new(type) {
