@@ -1,6 +1,8 @@
 class Piece {
     static Array type2matrices;
     static Array type2variants;
+    field int type;
+    field int variant;
 
     function void init() {
         let type2variants = Array.new(7);
@@ -20,6 +22,7 @@ class Piece {
         let type2matrices[4] = Piece.buildL();
         let type2matrices[5] = Piece.buildJ();
         let type2matrices[6] = Piece.buildT();
+        return;
     }
 
     function Array buildO() {
@@ -169,7 +172,7 @@ class Piece {
         return ms;
     }
 
-    function Array buildO() {
+    function Array buildT() {
         var Array ms, m0, m1, m2, m3;
         let ms = Array.new(1);
         let m0 = Array.new(4);
@@ -204,8 +207,10 @@ class Piece {
         return ms;
     }
 
-    // TODO:
     // http://colinfahey.com/tetris/tetris_diagram_pieces_orientations_new.jpg
-    function Piece new(type) {
+    function Piece new(typ) {
+        let type = typ;
+        let variant = 0;
+        return this;
     }
 }
