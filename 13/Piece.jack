@@ -226,6 +226,14 @@ class Piece {
         return;
     }
 
+    method void rotateBack() {
+        let variant = variant - 1;
+        if (variant = -1) {
+            let variant = type2variants[type]-1;
+        }
+        return;
+    }
+
     method void moveDown() {
         let y = y - 1;
         return;
