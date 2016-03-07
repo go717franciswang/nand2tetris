@@ -218,6 +218,10 @@ class Piece {
         return this;
     }
 
+    method void dispose() {
+        return;
+    }
+
     method void rotate() {
         let variant = variant + 1;
         if (variant = type2variants[type]) {

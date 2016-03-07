@@ -1,0 +1,5 @@
+class Util {
+    function mod(x, y) {
+        return x - (x / y * y);
+    }
+}

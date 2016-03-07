@@ -1,0 +1,21 @@
+class Stack {
+    field Node root;
+
+    function Stack new() {
+        let root = null;
+        return this;
+    }
+
+    method void dispose() {
+        return;
+    }
+
+    method Stack append(int item) {
+        var Node node;
+        let node = Node.new(item);
+        if (root = null) {
+            let root = node;
+        }
+        return this;
+    }
+}

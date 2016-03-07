@@ -4,6 +4,18 @@ class Tetris {
     field int rowCount;
     field Piece falling;
     field boolean gameRunning;
+    static int KEYLEFT;
+    static int KEYRIGHT;
+    static int KEYSPACE;
+    static int KEYDOWN;
+
+    function void init() {
+        let Tetris.KEYLEFT = 130;
+        let Tetris.KEYRIGHT = 132;
+        let Tetris.KEYSPACE = 32;
+        let Tetris.KEYDOWN = 133;
+        return;
+    }
 
     function Tetris new() {
         var int i, j;
@@ -25,6 +37,10 @@ class Tetris {
         return this;
     }
 
+    method void dispose() {
+        return;
+    }
+
     method void run() {
         let falling = getRandomPiece();
         let gameRunning = true;
@@ -33,34 +49,34 @@ class Tetris {
         while (gameRunning) {
             let key = getKey();
             if (~(key = prevKey)) {
-                if (key = LEFT) {
+                if (key = Tetris.KEYLEFT) {
                     do falling.moveLeft();
-                    if (collides(falling)) {
+                    if (collides()) {
                         do falling.moveRight();
                     }
                 }
-                if (key = RIGHT) {
+                if (key = Tetris.KEYRIGHT) {
                     do falling.moveRight();
-                    if (collides(falling)) {
+                    if (collides()) {
                         do falling.moveLeft();
                     }
                 }
-                if (key = SPACE) {
+                if (key = Tetris.KEYSPACE) {
                     do falling.rotate();
-                    if (collides(falling)) {
+                    if (collides()) {
                         do falling.rotateBack();
                     }
                 }
-                if (key = DOWN) {
+                if (key = Tetris.KEYDOWN) {
                     do falling.moveDown();
-                    if (collides(falling)) {
+                    if (collides()) {
                         do handleDownwardCollision();
                     }
                 }
             }
             if (Util.mod(gameTime, 100) = 0) {
                 falling.moveDown();
-                if (collides(falling)) {
+                if (collides()) {
                     do handleDownwardCollision();
                 }
             }
@@ -69,6 +85,23 @@ class Tetris {
             let prevKey = key;
         }
         return;
+    }
+
+    method boolean collides() {
+        var Stack positions; 
+        let positions = falling.computePositions();
+        let pos = positions.pop();
+        while (pos) {
+            if (occupied(pos)) {
+                positions.dispose();
+                return true;
+            }
+            do pos.dispose();
+            let pos = positions.pop();
+        }
+        do positions.dispose();
+
+        return false;
     }
 
     method void handleDownwardCollision() {
