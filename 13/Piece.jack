@@ -239,6 +239,11 @@ class Piece {
         return;
     }
 
+    method void moveUp() {
+        let y = y + 1;
+        return;
+    }
+
     method void moveLeft() {
         let x = x - 1;
         return;

@@ -2,6 +2,8 @@ class Tetris {
     field Array board;
     field int columnCount;
     field int rowCount;
+    field Piece falling;
+    field boolean gameRunning;
 
     function Tetris new() {
         var int i, j;
@@ -24,6 +26,61 @@ class Tetris {
     }
 
     method void run() {
+        let falling = getRandomPiece();
+        let gameRunning = true;
+        let gameTime = 0;
+        let prevKey = null;
+        while (gameRunning) {
+            let key = getKey();
+            if (~(key = prevKey)) {
+                if (key = LEFT) {
+                    do falling.moveLeft();
+                    if (collides(falling)) {
+                        do falling.moveRight();
+                    }
+                }
+                if (key = RIGHT) {
+                    do falling.moveRight();
+                    if (collides(falling)) {
+                        do falling.moveLeft();
+                    }
+                }
+                if (key = SPACE) {
+                    do falling.rotate();
+                    if (collides(falling)) {
+                        do falling.rotateBack();
+                    }
+                }
+                if (key = DOWN) {
+                    do falling.moveDown();
+                    if (collides(falling)) {
+                        do handleDownwardCollision();
+                    }
+                }
+            }
+            if (Util.mod(gameTime, 100) = 0) {
+                falling.moveDown();
+                if (collides(falling)) {
+                    do handleDownwardCollision();
+                }
+            }
+
+            let gameTime = gameTime + 1;
+            let prevKey = key;
+        }
+        return;
+    }
+
+    method void handleDownwardCollision() {
+        do falling.moveUp();
+        do freeze(falling);
+        do falling.dispose();
+        do wipeConnectedRows();
+        if (topRowOccoupied()) {
+            let gameRunning = false;
+        } else {
+            let falling = getRandomPiece();
+        }
         return;
     }
 
