@@ -1,0 +1,9 @@
+class Random {
+    function init() {
+        return;
+    }
+
+    function getNumber(begin, end) {
+        return 0;
+    }
+}

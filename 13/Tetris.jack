@@ -118,6 +118,7 @@ class Tetris {
     }
 
     method Piece getRandomPiece() {
-        return;
+        var int typ = Random.getNumber(0, 6);
+        return Piece.new(typ);
     }
 }
