@@ -1,8 +1,8 @@
 class Stack {
-    field Node root;
+    field Node head;
 
     function Stack new() {
-        let root = null;
+        let head = null;
         return this;
     }
 
@@ -12,10 +12,19 @@ class Stack {
 
     method Stack append(int item) {
         var Node node;
-        let node = Node.new(item);
-        if (root = null) {
-            let root = node;
-        }
+        let node = Node.new(item, head);
+        let head = node;
         return this;
+    }
+
+    method int pop() {
+        var int item;
+        if (head = null) {
+            return null;
+        }
+
+        let item = node.getItem();
+        let head = node.nextNode();
+        return item;
     }
 }

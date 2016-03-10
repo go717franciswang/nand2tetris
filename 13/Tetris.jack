@@ -104,6 +104,11 @@ class Tetris {
         return false;
     }
 
+    method boolean occupied(Position pos) {
+        //TODO
+        return false;
+    }
+
     method void handleDownwardCollision() {
         do falling.moveUp();
         do freeze(falling);

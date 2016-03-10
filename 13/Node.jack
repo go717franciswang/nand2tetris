@@ -1,0 +1,18 @@
+class Node {
+    field Node next;
+    field int val;
+
+    function Node new(int item, Node nextNode) {
+        let next = nextNode;
+        let val = item;
+        return this;
+    }
+
+    method int getItem() {
+        return val;
+    }
+
+    method Node nextNode() {
+        return next;
+    }
+}

@@ -212,7 +212,7 @@ class Piece {
     // http://colinfahey.com/tetris/tetris_diagram_pieces_orientations_new.jpg
     function Piece new(typ) {
         let type = typ;
-        let variant = 0;
+        let variant = Random.getNumber(0, type2variants[typ]-1);
         let x = 5;
         let y = 22;
         return this;
