@@ -257,4 +257,9 @@ class Piece {
         let x = x + 1;
         return;
     }
+
+    method Array computePositions() {
+        // TODO
+        return;
+    }
 }

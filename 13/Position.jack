@@ -1,0 +1,18 @@
+class Position {
+    field int row;
+    field int col;
+
+    function new(int ro, int co) {
+        let row = ro;
+        let col = co;
+        return this;
+    }
+
+    method int r() {
+        return row;
+    }
+
+    method int c() {
+        return col;
+    }
+}

@@ -105,8 +105,9 @@ class Tetris {
     }
 
     method boolean occupied(Position pos) {
-        //TODO
-        return false;
+        var Array row;
+        let row = board[pos.r()];
+        return row[pos.c()];
     }
 
     method void handleDownwardCollision() {
