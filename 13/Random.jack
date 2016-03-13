@@ -5,13 +5,13 @@ https://cdsmith.wordpress.com/2011/10/10/build-your-own-simple-random-numbers/
 class Random {
     static int state;
 
-    function init() {
+    function void init() {
         let state = 1234;
         return;
     }
 
-    function getNumber(begin, end) {
-        let state = Util.mod(7 * state, 99991);
+    function int getNumber(int begin, int end) {
+        let state = Util.mod(7 * state, 16381);
         return begin + Util.mod(state, end - begin + 1);
     }
 }

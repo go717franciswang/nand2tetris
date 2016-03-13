@@ -1,19 +1,19 @@
 class Tetris {
+    static int KEYLEFT;
+    static int KEYRIGHT;
+    static int KEYSPACE;
+    static int KEYDOWN;
     field Array board;
     field int columnCount;
     field int rowCount;
     field Piece falling;
     field boolean gameRunning;
-    static int KEYLEFT;
-    static int KEYRIGHT;
-    static int KEYSPACE;
-    static int KEYDOWN;
 
     function void init() {
-        let Tetris.KEYLEFT = 130;
-        let Tetris.KEYRIGHT = 132;
-        let Tetris.KEYSPACE = 32;
-        let Tetris.KEYDOWN = 133;
+        let KEYLEFT = 130;
+        let KEYRIGHT = 132;
+        let KEYSPACE = 32;
+        let KEYDOWN = 133;
         return;
     }
 
@@ -59,25 +59,25 @@ class Tetris {
         while (gameRunning) {
             let key = getKey();
             if (~(key = prevKey)) {
-                if (key = Tetris.KEYLEFT) {
+                if (key = KEYLEFT) {
                     do falling.moveLeft();
                     if (collides()) {
                         do falling.moveRight();
                     }
                 }
-                if (key = Tetris.KEYRIGHT) {
+                if (key = KEYRIGHT) {
                     do falling.moveRight();
                     if (collides()) {
                         do falling.moveLeft();
                     }
                 }
-                if (key = Tetris.KEYSPACE) {
+                if (key = KEYSPACE) {
                     do falling.rotate();
                     if (collides()) {
                         do falling.rotateBack();
                     }
                 }
-                if (key = Tetris.KEYDOWN) {
+                if (key = KEYDOWN) {
                     do falling.moveDown();
                     if (collides()) {
                         do handleDownwardCollision();
