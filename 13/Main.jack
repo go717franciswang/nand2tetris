@@ -4,7 +4,7 @@ class Main {
         do Tetris.init();
         do Piece.init();
         let game = Tetris.new();
-        do game.run();
+        // do game.run();
         return;
     }
 }

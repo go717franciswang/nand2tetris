@@ -34,10 +34,20 @@ class Tetris {
             }
             let i = i + 1;
         }
+
+        do drawBoard();
         return this;
     }
 
     method void dispose() {
+        return;
+    }
+
+    method void drawBoard() {
+        do Screen.drawLine(192, 0, 320, 0);
+        do Screen.drawLine(192, 0, 192, 256);
+        do Screen.drawLine(320, 0, 320, 256);
+        do Screen.drawLine(192, 256, 320, 256);
         return;
     }
 
