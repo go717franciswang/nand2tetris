@@ -5,6 +5,7 @@ class Main {
         do Piece.init();
         let game = Tetris.new();
         // do game.run();
+        do game.dispose();
         return;
     }
 }

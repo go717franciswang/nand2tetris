@@ -24,7 +24,7 @@ class Tetris {
         var Array row;
         let columnCount = 10;
         let rowCount = 22;
-        let board = Array.new(columnCount);
+        let board = Array.new(rowCount);
 
         let i = 0;
         while (i < rowCount) {
@@ -42,14 +42,22 @@ class Tetris {
     }
 
     method void dispose() {
+        var int i, j;
+        var Array row;
+        let i = 0;
+        while (i < rowCount) {
+            let row = board[i];
+            do row.dispose();
+            let i = i + 1;
+        }
         return;
     }
 
     method void drawBoard() {
         do Screen.drawLine(192, 0, 320, 0);
-        do Screen.drawLine(192, 0, 192, 256);
-        do Screen.drawLine(320, 0, 320, 256);
-        do Screen.drawLine(192, 256, 320, 256);
+        do Screen.drawLine(192, 0, 192, 255);
+        do Screen.drawLine(320, 0, 320, 255);
+        do Screen.drawLine(192, 255, 320, 255);
         return;
     }
 
