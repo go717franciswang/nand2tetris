@@ -30,8 +30,9 @@ class Tetris {
         while (i < rowCount) {
             let row = Array.new(columnCount);
             let board[i] = row;
+            let j = 0;
             while (j < columnCount) {
-                let row[j] = true;
+                let row[j] = false;
                 let j = j + 1;
             }
             let i = i + 1;
@@ -59,14 +60,14 @@ class Tetris {
         do Screen.clearScreen();
 
         // board
-        do Screen.drawLine(192, 0, 310, 0);
-        do Screen.drawLine(192, 0, 192, 255);
-        do Screen.drawLine(310, 0, 310, 255);
+        do Screen.drawLine(192, 15, 310, 15);
+        do Screen.drawLine(192, 15, 192, 255);
+        do Screen.drawLine(310, 15, 310, 255);
         do Screen.drawLine(192, 255, 310, 255);
 
         // boxes
         let i = 0;
-        while (i < rowCount) {
+        while (i < (rowCount-2)) {
             let row = board[i];
 
             let j = 0;
