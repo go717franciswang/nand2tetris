@@ -31,7 +31,7 @@ class Tetris {
             let row = Array.new(columnCount);
             let board[i] = row;
             while (j < columnCount) {
-                let row[j] = false;
+                let row[j] = true;
                 let j = j + 1;
             }
             let i = i + 1;
@@ -42,7 +42,7 @@ class Tetris {
     }
 
     method void dispose() {
-        var int i, j;
+        var int i;
         var Array row;
         let i = 0;
         while (i < rowCount) {
@@ -54,10 +54,34 @@ class Tetris {
     }
 
     method void drawBoard() {
-        do Screen.drawLine(192, 0, 320, 0);
+        var int i, j, x, y;
+        var Array row;
+        do Screen.clearScreen();
+
+        // board
+        do Screen.drawLine(192, 0, 310, 0);
         do Screen.drawLine(192, 0, 192, 255);
-        do Screen.drawLine(320, 0, 320, 255);
-        do Screen.drawLine(192, 255, 320, 255);
+        do Screen.drawLine(310, 0, 310, 255);
+        do Screen.drawLine(192, 255, 310, 255);
+
+        // boxes
+        let i = 0;
+        while (i < rowCount) {
+            let row = board[i];
+
+            let j = 0;
+            let y = 255 - (i * 12);
+            while (j < columnCount) {
+                if (row[j]) {
+                    let x = 192 + (j * 12);
+                    do Screen.drawRectangle(x, y-10, x+10, y);
+                }
+                let j = j + 1;
+            }
+
+            let i = i + 1;
+        }
+
         return;
     }
 
