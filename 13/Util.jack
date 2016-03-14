@@ -1,5 +1,5 @@
 class Util {
-    function mod(x, y) {
+    function int mod(int x, int y) {
         return x - (x / y * y);
     }
 }

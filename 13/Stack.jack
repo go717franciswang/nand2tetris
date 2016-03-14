@@ -1,7 +1,7 @@
 class Stack {
     field Node head;
 
-    function Stack new() {
+    constructor Stack new() {
         let head = null;
         return this;
     }

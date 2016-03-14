@@ -2,10 +2,14 @@ class Position {
     field int row;
     field int col;
 
-    function new(int ro, int co) {
+    constructor Position new(int ro, int co) {
         let row = ro;
         let col = co;
         return this;
+    }
+
+    method void dispose() {
+        return;
     }
 
     method int r() {

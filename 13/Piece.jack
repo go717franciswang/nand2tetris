@@ -210,7 +210,7 @@ class Piece {
     }
 
     // http://colinfahey.com/tetris/tetris_diagram_pieces_orientations_new.jpg
-    function Piece new(typ) {
+    constructor Piece new(int typ) {
         let type = typ;
         let variant = Random.getNumber(0, type2variants[typ]-1);
         let x = 5;
@@ -260,6 +260,8 @@ class Piece {
 
     method Array computePositions() {
         // TODO
-        return;
+        var Array positions;
+        let positions = Array.new(6);
+        return positions;
     }
 }

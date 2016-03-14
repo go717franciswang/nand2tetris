@@ -1,13 +1,15 @@
 class Tetris {
-    static int KEYLEFT;
-    static int KEYRIGHT;
-    static int KEYSPACE;
-    static int KEYDOWN;
     field Array board;
     field int columnCount;
     field int rowCount;
     field Piece falling;
     field boolean gameRunning;
+    field int gameTime;
+
+    static int KEYLEFT;
+    static int KEYRIGHT;
+    static int KEYSPACE;
+    static int KEYDOWN;
 
     function void init() {
         let KEYLEFT = 130;
@@ -17,7 +19,7 @@ class Tetris {
         return;
     }
 
-    function Tetris new() {
+    constructor Tetris new() {
         var int i, j;
         var Array row;
         let columnCount = 10;
@@ -52,12 +54,14 @@ class Tetris {
     }
 
     method void run() {
+        var int key, prevKey;
+
         let falling = getRandomPiece();
         let gameRunning = true;
         let gameTime = 0;
-        let prevKey = null;
+        let prevKey = 0;
         while (gameRunning) {
-            let key = getKey();
+            let key = Keyboard.keyPressed();
             if (~(key = prevKey)) {
                 if (key = KEYLEFT) {
                     do falling.moveLeft();
@@ -85,7 +89,7 @@ class Tetris {
                 }
             }
             if (Util.mod(gameTime, 100) = 0) {
-                falling.moveDown();
+                do falling.moveDown();
                 if (collides()) {
                     do handleDownwardCollision();
                 }
@@ -99,11 +103,13 @@ class Tetris {
 
     method boolean collides() {
         var Stack positions; 
+        var Position pos;
+
         let positions = falling.computePositions();
         let pos = positions.pop();
         while (pos) {
             if (occupied(pos)) {
-                positions.dispose();
+                do positions.dispose();
                 return true;
             }
             do pos.dispose();
@@ -122,10 +128,10 @@ class Tetris {
 
     method void handleDownwardCollision() {
         do falling.moveUp();
-        do freeze(falling);
+        do freeze();
         do falling.dispose();
         do wipeConnectedRows();
-        if (topRowOccoupied()) {
+        if (topRowOccupied()) {
             let gameRunning = false;
         } else {
             let falling = getRandomPiece();
@@ -186,7 +192,16 @@ class Tetris {
     }
 
     method Piece getRandomPiece() {
-        var int typ = Random.getNumber(0, 6);
-        return Piece.new(typ);
+        return Piece.new(Random.getNumber(0, 6));
+    }
+
+    method void freeze() {
+        // TODO
+        return;
+    }
+
+    method boolean topRowOccupied() {
+        // TODO
+        return false;
     }
 }

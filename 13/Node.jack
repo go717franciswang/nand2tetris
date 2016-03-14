@@ -2,7 +2,7 @@ class Node {
     field Node next;
     field int val;
 
-    function Node new(int item, Node nextNode) {
+    constructor Node new(int item, Node nextNode) {
         let next = nextNode;
         let val = item;
         return this;
