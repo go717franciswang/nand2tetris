@@ -258,10 +258,9 @@ class Piece {
         return;
     }
 
-    method Array computePositions() {
-        // TODO
-        var Array positions;
-        let positions = Array.new(6);
+    method Stack computePositions() {
+        var Stack positions;
+        let positions = Stack.new();
         return positions;
     }
 }

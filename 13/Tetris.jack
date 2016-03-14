@@ -142,6 +142,7 @@ class Tetris {
         let pos = positions.pop();
         while (pos) {
             if (occupied(pos)) {
+                do pos.dispose();
                 do positions.dispose();
                 return true;
             }
@@ -229,12 +230,36 @@ class Tetris {
     }
 
     method void freeze() {
-        // TODO
+        var Stack positions;
+        var Position pos;
+        var Array row;
+
+        let positions = falling.computePositions();
+        let pos = positions.pop();
+        while (pos) {
+            let row = board[pos.r()];
+            let row[pos.c()] = true;
+            do pos.dispose();
+            let pos = positions.pop();
+        }
+        do positions.dispose();
         return;
     }
 
     method boolean topRowOccupied() {
-        // TODO
+        var Array row;
+        var int j;
+        let row = board[rowCount-1];
+        let j = 0;
+        while (j < columnCount) {
+            if (row[j]) {
+                do row.dispose();
+                return true;
+            }
+            let j = j + 1;
+        }
+
+        do row.dispose();
         return false;
     }
 }
