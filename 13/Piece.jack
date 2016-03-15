@@ -1,6 +1,7 @@
 class Piece {
     static Array type2matrices;
     static Array type2variants;
+    static Array twoToThe;
     field int type;
     field int variant;
     field int x;
@@ -24,6 +25,12 @@ class Piece {
         let type2matrices[4] = Piece.buildL();
         let type2matrices[5] = Piece.buildJ();
         let type2matrices[6] = Piece.buildT();
+
+        let twoToThe = Array.new(4);
+        let twoToThe[0] = 1;
+        let twoToThe[1] = 2;
+        let twoToThe[2] = 4;
+        let twoToThe[3] = 8;
         return;
     }
 
@@ -260,7 +267,24 @@ class Piece {
 
     method Stack computePositions() {
         var Stack positions;
+        var int i, j, row;
+        var Array matrix, matrices;
+
+        let matrices = type2matrices[type];
+        let matrix = matrices[variant];
         let positions = Stack.new();
+        let i = 0;
+        while (i < 4) {
+            let row = matrix[i];
+            let j = 0;
+            while (j < 4) {
+                if (row & twoToThe[j]) {
+                    do positions.append(Position.new(x+j-2, y+i+4));
+                }
+                let j = j + 1;
+            }
+            let i = i + 1;
+        }
         return positions;
     }
 }

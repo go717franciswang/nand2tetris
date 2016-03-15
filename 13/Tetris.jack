@@ -96,6 +96,7 @@ class Tetris {
         while (gameRunning) {
             let key = Keyboard.keyPressed();
             if (~(key = prevKey)) {
+                // TODO: handle moving against wall
                 if (key = KEYLEFT) {
                     do falling.moveLeft();
                     if (collides()) {
@@ -156,6 +157,9 @@ class Tetris {
 
     method boolean occupied(Position pos) {
         var Array row;
+        if (pos.r() < 0) {
+            return true;
+        }
         let row = board[pos.r()];
         return row[pos.c()];
     }
