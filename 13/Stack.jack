@@ -23,8 +23,8 @@ class Stack {
             return null;
         }
 
-        let item = node.getItem();
-        let head = node.nextNode();
+        let item = head.getItem();
+        let head = head.nextNode();
         return item;
     }
 }
