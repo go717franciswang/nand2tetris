@@ -7,24 +7,32 @@ class Stack {
     }
 
     method void dispose() {
+        var Position item;
+        let item = pop();
+        while (~(item = null)) {
+            let item = pop();
+        }
         return;
     }
 
-    method Stack append(int item) {
+    method Stack append(Position item) {
         var Node node;
         let node = Node.new(item, head);
         let head = node;
         return this;
     }
 
-    method int pop() {
-        var int item;
+    method Position pop() {
+        var Position item;
+        var Node node;
         if (head = null) {
             return null;
         }
 
-        let item = head.getItem();
-        let head = head.nextNode();
+        let node = head;
+        let item = node.getItem();
+        let head = node.nextNode();
+        do node.dispose();
         return item;
     }
 }

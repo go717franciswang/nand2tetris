@@ -1,15 +1,20 @@
 class Node {
     field Node next;
-    field int val;
+    field Position pos;
 
-    constructor Node new(int item, Node nextNode) {
+    constructor Node new(Position item, Node nextNode) {
         let next = nextNode;
-        let val = item;
+        let pos = item;
         return this;
     }
 
-    method int getItem() {
-        return val;
+    method void dispose() {
+        do pos.dispose();
+        return;
+    }
+
+    method Position getItem() {
+        return pos;
     }
 
     method Node nextNode() {

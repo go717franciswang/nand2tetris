@@ -25,6 +25,7 @@ class Tetris {
         let columnCount = 10;
         let rowCount = 22;
         let board = Array.new(rowCount);
+        let gameTime = 0;
 
         let i = 0;
         while (i < rowCount) {
@@ -57,9 +58,13 @@ class Tetris {
     method void drawBoard() {
         var int i, j, x, y;
         var Array row;
-        do Screen.clearScreen();
+        var Stack positions;
+        var Position pos;
+
+        //do Screen.clearScreen();
 
         // board
+        //do Output.printInt(gameTime);
         do Screen.drawLine(192, 15, 310, 15);
         do Screen.drawLine(192, 15, 192, 255);
         do Screen.drawLine(310, 15, 310, 255);
@@ -71,11 +76,9 @@ class Tetris {
             let row = board[i];
 
             let j = 0;
-            let y = 255 - (i * 12);
             while (j < columnCount) {
                 if (row[j]) {
-                    let x = 192 + (j * 12);
-                    do Screen.drawRectangle(x, y-10, x+10, y);
+                    do drawBlock(i, j);
                 }
                 let j = j + 1;
             }
@@ -83,6 +86,37 @@ class Tetris {
             let i = i + 1;
         }
 
+        // falling
+        if (falling = null) {
+            return;
+        }
+
+        let positions = falling.computePositions();
+        let pos = positions.pop();
+        while (~(pos = null)) {
+            do drawBlock(pos.r(), pos.c());
+            do pos.dispose();
+            let pos = positions.pop();
+        }
+        do positions.dispose();
+
+        return;
+    }
+
+    method void drawBlock(int row, int col) {
+        var int x, y;
+        //do Output.moveCursor(0,0);
+        do Output.printInt(row);
+        do Output.println();
+        //do Output.printInt(col);
+        //do Output.println();
+        if (row > (rowCount-3)) {
+            return;
+        }
+
+        let y = 255 - (row * 12);
+        let x = 192 + (col * 12);
+        do Screen.drawRectangle(x, y-10, x+10, y);
         return;
     }
 
@@ -91,7 +125,6 @@ class Tetris {
 
         let falling = getRandomPiece();
         let gameRunning = true;
-        let gameTime = 0;
         let prevKey = 0;
         while (gameRunning) {
             let key = Keyboard.keyPressed();
@@ -122,16 +155,20 @@ class Tetris {
                     }
                 }
             }
-            if (Util.mod(gameTime, 100) = 0) {
+            if (Util.mod(gameTime, 1) = 0) {
                 do falling.moveDown();
                 if (collides()) {
                     do handleDownwardCollision();
                 }
             }
 
+            do drawBoard();
             let gameTime = gameTime + 1;
             let prevKey = key;
+            do Output.printInt(gameTime);
+            do Output.println();
         }
+        do Output.printString("Game Over");
         return;
     }
 
@@ -141,7 +178,7 @@ class Tetris {
 
         let positions = falling.computePositions();
         let pos = positions.pop();
-        while (pos) {
+        while (~(pos = null)) {
             if (occupied(pos)) {
                 do pos.dispose();
                 do positions.dispose();
@@ -159,6 +196,9 @@ class Tetris {
         var Array row;
         if (pos.r() < 0) {
             return true;
+        }
+        if (pos.r() > (rowCount-1)) {
+            return false;
         }
         let row = board[pos.r()];
         return row[pos.c()];
@@ -180,7 +220,7 @@ class Tetris {
     method void wipeConnectedRows() {
         var int r;
         let r = 0;
-        while (r < 22) {
+        while (r < rowCount) {
             if (isConnected(r)) {
                 do wipeRow(r);
             } else {
@@ -195,7 +235,7 @@ class Tetris {
         var Array row;
         let c = 0;
         let row = board[r];
-        while (c < 10) {
+        while (c < columnCount) {
             if (row[c] = false) {
                 return false;
             }
@@ -209,12 +249,12 @@ class Tetris {
         var Array nextRow;
         var int c;
 
-        while (r < 21) {
+        while (r < rowCount-1) {
             let thisRow = board[r];
             let nextRow = board[r+1];
             let c = 0;
 
-            while (c < 10) {
+            while (c < columnCount) {
                 let thisRow[c] = nextRow[c];
                 let c = c + 1;
             }
@@ -222,7 +262,7 @@ class Tetris {
         }
 
         let c = 0;
-        while (c < 10) {
+        while (c < columnCount) {
             let nextRow[c] = false;
             let c = c + 1;
         }
@@ -240,7 +280,7 @@ class Tetris {
 
         let positions = falling.computePositions();
         let pos = positions.pop();
-        while (pos) {
+        while (~(pos = null)) {
             let row = board[pos.r()];
             let row[pos.c()] = true;
             do pos.dispose();

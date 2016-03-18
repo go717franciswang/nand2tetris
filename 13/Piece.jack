@@ -279,7 +279,7 @@ class Piece {
             let j = 0;
             while (j < 4) {
                 if (row & twoToThe[j]) {
-                    do positions.append(Position.new(x+j-2, y+i+4));
+                    do positions.append(Position.new(y+i+4, x+j-2));
                 }
                 let j = j + 1;
             }
