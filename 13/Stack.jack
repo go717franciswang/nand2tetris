@@ -12,6 +12,7 @@ class Stack {
         while (~(item = null)) {
             let item = pop();
         }
+        do Memory.deAlloc(this);
         return;
     }
 

@@ -52,6 +52,7 @@ class Tetris {
             do row.dispose();
             let i = i + 1;
         }
+        do Memory.deAlloc(this);
         return;
     }
 
@@ -106,8 +107,8 @@ class Tetris {
     method void drawBlock(int row, int col) {
         var int x, y;
         //do Output.moveCursor(0,0);
-        do Output.printInt(row);
-        do Output.println();
+        //do Output.printInt(row);
+        //do Output.println();
         //do Output.printInt(col);
         //do Output.println();
         if (row > (rowCount-3)) {
@@ -165,8 +166,8 @@ class Tetris {
             do drawBoard();
             let gameTime = gameTime + 1;
             let prevKey = key;
-            do Output.printInt(gameTime);
-            do Output.println();
+            //do Output.printInt(gameTime);
+            //do Output.println();
         }
         do Output.printString("Game Over");
         return;
@@ -205,6 +206,8 @@ class Tetris {
     }
 
     method void handleDownwardCollision() {
+        do Output.printString("Downward collision");
+        do Output.println();
         do falling.moveUp();
         do freeze();
         do falling.dispose();

@@ -226,6 +226,7 @@ class Piece {
     }
 
     method void dispose() {
+        do Memory.deAlloc(this);
         return;
     }
 
