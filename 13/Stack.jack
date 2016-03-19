@@ -10,17 +10,18 @@ class Stack {
         var Position item;
         let item = pop();
         while (~(item = null)) {
+            do item.dispose();
             let item = pop();
         }
         do Memory.deAlloc(this);
         return;
     }
 
-    method Stack append(Position item) {
+    method void append(Position item) {
         var Node node;
         let node = Node.new(item, head);
         let head = node;
-        return this;
+        return;
     }
 
     method Position pop() {

@@ -5,6 +5,7 @@ class Tetris {
     field Piece falling;
     field boolean gameRunning;
     field int gameTime;
+    field String s;
 
     static int KEYLEFT;
     static int KEYRIGHT;
@@ -59,8 +60,6 @@ class Tetris {
     method void drawBoard() {
         var int i, j, x, y;
         var Array row;
-        var Stack positions;
-        var Position pos;
 
         //do Screen.clearScreen();
 
@@ -71,36 +70,28 @@ class Tetris {
         do Screen.drawLine(310, 15, 310, 255);
         do Screen.drawLine(192, 255, 310, 255);
 
-        // boxes
-        let i = 0;
-        while (i < (rowCount-2)) {
-            let row = board[i];
+        // // boxes
+        // let i = 0;
+        // while (i < (rowCount-2)) {
+        //     let row = board[i];
 
-            let j = 0;
-            while (j < columnCount) {
-                if (row[j]) {
-                    do drawBlock(i, j);
-                }
-                let j = j + 1;
-            }
+        //     let j = 0;
+        //     while (j < columnCount) {
+        //         if (row[j]) {
+        //             do drawBlock(i, j);
+        //         }
+        //         let j = j + 1;
+        //     }
 
-            let i = i + 1;
-        }
+        //     let i = i + 1;
+        // }
 
         // falling
         if (falling = null) {
             return;
         }
 
-        let positions = falling.computePositions();
-        let pos = positions.pop();
-        while (~(pos = null)) {
-            do drawBlock(pos.r(), pos.c());
-            do pos.dispose();
-            let pos = positions.pop();
-        }
-        do positions.dispose();
-
+        do drawFalling(false);
         return;
     }
 
@@ -131,6 +122,7 @@ class Tetris {
             let key = Keyboard.keyPressed();
             if (~(key = prevKey)) {
                 // TODO: handle moving against wall
+                do drawFalling(true);
                 if (key = KEYLEFT) {
                     do falling.moveLeft();
                     if (collides()) {
@@ -156,14 +148,16 @@ class Tetris {
                     }
                 }
             }
-            if (Util.mod(gameTime, 1) = 0) {
+            if (Util.mod(gameTime, 50) = 0) {
+                do drawFalling(true);
                 do falling.moveDown();
                 if (collides()) {
                     do handleDownwardCollision();
                 }
             }
+            do drawFalling(false);
 
-            do drawBoard();
+            // do drawBoard();
             let gameTime = gameTime + 1;
             let prevKey = key;
             //do Output.printInt(gameTime);
@@ -180,6 +174,15 @@ class Tetris {
         let positions = falling.computePositions();
         let pos = positions.pop();
         while (~(pos = null)) {
+            let s = "occupied ";
+            do Output.printString(s);
+            do s.dispose();
+            do Output.printInt(pos.r());
+            let s = "         ";
+            do Output.printString(s);
+            do s.dispose();
+            do Output.println();
+
             if (occupied(pos)) {
                 do pos.dispose();
                 do positions.dispose();
@@ -193,6 +196,22 @@ class Tetris {
         return false;
     }
 
+    method void drawFalling(boolean erase) {
+        var Stack positions;
+        var Position pos;
+
+        do Screen.setColor(~erase);
+        let positions = falling.computePositions();
+        let pos = positions.pop();
+        while (~(pos = null)) {
+            do drawBlock(pos.r(), pos.c());
+            do pos.dispose();
+            let pos = positions.pop();
+        }
+        do positions.dispose();
+        return;
+    }
+
     method boolean occupied(Position pos) {
         var Array row;
         if (pos.r() < 0) {
@@ -202,6 +221,15 @@ class Tetris {
             return false;
         }
         let row = board[pos.r()];
+            let s = "occupied2 ";
+            do Output.printString(s);
+            do s.dispose();
+            do Output.printInt(pos.r());
+            let s = "         ";
+            do Output.printString(s);
+            do s.dispose();
+            do Output.println();
+
         return row[pos.c()];
     }
 
@@ -210,12 +238,9 @@ class Tetris {
         do Output.println();
         do falling.moveUp();
         do freeze();
-        do falling.dispose();
         do wipeConnectedRows();
         if (topRowOccupied()) {
             let gameRunning = false;
-        } else {
-            let falling = getRandomPiece();
         }
         return;
     }
@@ -252,6 +277,13 @@ class Tetris {
         var Array nextRow;
         var int c;
 
+        do Output.printString("wipe row  ");
+        do Output.printInt(r);
+        do Output.printString("      ");
+        do Output.println();
+        // TODO: exception here
+        do board[r].dispose();
+
         while (r < rowCount-1) {
             let thisRow = board[r];
             let nextRow = board[r+1];
@@ -284,12 +316,19 @@ class Tetris {
         let positions = falling.computePositions();
         let pos = positions.pop();
         while (~(pos = null)) {
+            // do Output.printString("freeze ");
+            // do Output.printInt(pos.r());
+            // do Output.printString("     ");
+            // do Output.println();
             let row = board[pos.r()];
             let row[pos.c()] = true;
             do pos.dispose();
             let pos = positions.pop();
         }
         do positions.dispose();
+        do drawFalling(false);
+        do falling.dispose();
+        let falling = getRandomPiece();
         return;
     }
 
@@ -300,13 +339,11 @@ class Tetris {
         let j = 0;
         while (j < columnCount) {
             if (row[j]) {
-                do row.dispose();
                 return true;
             }
             let j = j + 1;
         }
 
-        do row.dispose();
         return false;
     }
 }
