@@ -271,24 +271,6 @@ class Piece {
         var int i, j, row;
         var Array matrix, matrices;
 
-        var String s;
-        let s = "type ";
-        do Output.printString(s);
-        do s.dispose();
-        do Output.printInt(type);
-        let s = "         ";
-        do Output.printString(s);
-        do s.dispose();
-        do Output.println();
-        let s = "variant ";
-        do Output.printString(s);
-        do s.dispose();
-        do Output.printInt(variant);
-        let s = "         ";
-        do Output.printString(s);
-        do s.dispose();
-        do Output.println();
-
         let matrices = type2matrices[type];
         let matrix = matrices[variant];
         let positions = Stack.new();

@@ -64,7 +64,6 @@ class Tetris {
         do Screen.clearScreen();
 
         // board
-        //do Output.printInt(gameTime);
         do Screen.drawLine(191, 15, 311, 15);
         do Screen.drawLine(191, 15, 191, 255);
         do Screen.drawLine(311, 15, 311, 255);
@@ -97,11 +96,6 @@ class Tetris {
 
     method void drawBlock(int row, int col) {
         var int x, y;
-        //do Output.moveCursor(0,0);
-        //do Output.printInt(row);
-        //do Output.println();
-        //do Output.printInt(col);
-        //do Output.println();
         if (row > (rowCount-3)) {
             return;
         }
@@ -160,8 +154,6 @@ class Tetris {
             // do drawBoard();
             let gameTime = gameTime + 1;
             let prevKey = key;
-            //do Output.printInt(gameTime);
-            //do Output.println();
         }
         do Output.printString("Game Over");
         return;
@@ -174,15 +166,6 @@ class Tetris {
         let positions = falling.computePositions();
         let pos = positions.pop();
         while (~(pos = null)) {
-            // let s = "occupied ";
-            // do Output.printString(s);
-            // do s.dispose();
-            // do Output.printInt(pos.r());
-            // let s = "         ";
-            // do Output.printString(s);
-            // do s.dispose();
-            // do Output.println();
-
             if (occupied(pos)) {
                 do pos.dispose();
                 do positions.dispose();
@@ -214,28 +197,17 @@ class Tetris {
 
     method boolean occupied(Position pos) {
         var Array row;
-        if (pos.r() < 0) {
+        if ((pos.r() < 0) | (pos.c() < 0) | (pos.c() > (columnCount-1))) {
             return true;
         }
         if (pos.r() > (rowCount-1)) {
             return false;
         }
         let row = board[pos.r()];
-            // let s = "occupied2 ";
-            // do Output.printString(s);
-            // do s.dispose();
-            // do Output.printInt(pos.r());
-            // let s = "         ";
-            // do Output.printString(s);
-            // do s.dispose();
-            // do Output.println();
-
         return row[pos.c()];
     }
 
     method void handleDownwardCollision() {
-        // do Output.printString("Downward collision");
-        // do Output.println();
         do falling.moveUp();
         do freeze();
         do wipeConnectedRows();
@@ -311,12 +283,10 @@ class Tetris {
         let positions = falling.computePositions();
         let pos = positions.pop();
         while (~(pos = null)) {
-            // do Output.printString("freeze ");
-            // do Output.printInt(pos.r());
-            // do Output.printString("     ");
-            // do Output.println();
-            let row = board[pos.r()];
-            let row[pos.c()] = true;
+            if (pos.r() < rowCount) {
+                let row = board[pos.r()];
+                let row[pos.c()] = true;
+            }
             do pos.dispose();
             let pos = positions.pop();
         }
