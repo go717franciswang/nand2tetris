@@ -50,7 +50,7 @@ class Piece {
 
     function Array buildI() {
         var Array ms, m0, m1;
-        let ms = Array.new(1);
+        let ms = Array.new(2);
         let m0 = Array.new(4);
         let m1 = Array.new(4);
 
@@ -71,7 +71,7 @@ class Piece {
 
     function Array buildS() {
         var Array ms, m0, m1;
-        let ms = Array.new(1);
+        let ms = Array.new(2);
         let m0 = Array.new(4);
         let m1 = Array.new(4);
 
@@ -92,7 +92,7 @@ class Piece {
 
     function Array buildZ() {
         var Array ms, m0, m1;
-        let ms = Array.new(1);
+        let ms = Array.new(2);
         let m0 = Array.new(4);
         let m1 = Array.new(4);
 
@@ -113,7 +113,7 @@ class Piece {
 
     function Array buildL() {
         var Array ms, m0, m1, m2, m3;
-        let ms = Array.new(1);
+        let ms = Array.new(4);
         let m0 = Array.new(4);
         let m1 = Array.new(4);
         let m2 = Array.new(4);
@@ -148,7 +148,7 @@ class Piece {
 
     function Array buildJ() {
         var Array ms, m0, m1, m2, m3;
-        let ms = Array.new(1);
+        let ms = Array.new(4);
         let m0 = Array.new(4);
         let m1 = Array.new(4);
         let m2 = Array.new(4);
@@ -183,7 +183,7 @@ class Piece {
 
     function Array buildT() {
         var Array ms, m0, m1, m2, m3;
-        let ms = Array.new(1);
+        let ms = Array.new(4);
         let m0 = Array.new(4);
         let m1 = Array.new(4);
         let m2 = Array.new(4);
@@ -219,7 +219,7 @@ class Piece {
     // http://colinfahey.com/tetris/tetris_diagram_pieces_orientations_new.jpg
     constructor Piece new(int typ) {
         let type = typ;
-        let variant = Random.getNumber(0, type2variants[typ]-1);
+        let variant = Random.getNumber(0, type2variants[type]);
         let x = 5;
         let y = 22;
         return this;
@@ -271,6 +271,24 @@ class Piece {
         var int i, j, row;
         var Array matrix, matrices;
 
+        var String s;
+        let s = "type ";
+        do Output.printString(s);
+        do s.dispose();
+        do Output.printInt(type);
+        let s = "         ";
+        do Output.printString(s);
+        do s.dispose();
+        do Output.println();
+        let s = "variant ";
+        do Output.printString(s);
+        do s.dispose();
+        do Output.printInt(variant);
+        let s = "         ";
+        do Output.printString(s);
+        do s.dispose();
+        do Output.println();
+
         let matrices = type2matrices[type];
         let matrix = matrices[variant];
         let positions = Stack.new();
@@ -280,7 +298,7 @@ class Piece {
             let j = 0;
             while (j < 4) {
                 if (row & twoToThe[j]) {
-                    do positions.append(Position.new(y+i+4, x+j-2));
+                    do positions.append(Position.new(y-i+4, x+j-2));
                 }
                 let j = j + 1;
             }
