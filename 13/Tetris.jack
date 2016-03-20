@@ -1,7 +1,7 @@
 class Tetris {
     field Array board;
     field int columnCount, rowCount;
-    field Piece falling;
+    field Piece falling, preview;
     field boolean gameRunning;
     field int gameTime, ticksPerAnimation, score;
     field String s;
@@ -28,6 +28,8 @@ class Tetris {
         let gameTime = 0;
         let ticksPerAnimation = 100;
         let score = 0;
+        let falling = getRandomPiece();
+        let preview = getRandomPiece();
 
         let i = 0;
         while (i < rowCount) {
@@ -92,13 +94,9 @@ class Tetris {
 
             let i = i + 1;
         }
-
-        // falling
-        if (falling = null) {
-            return;
-        }
-
         do drawFalling(false);
+        do drawPreview(false);
+
         return;
     }
 
@@ -117,7 +115,6 @@ class Tetris {
     method void run() {
         var int key, prevKey;
 
-        let falling = getRandomPiece();
         let gameRunning = true;
         let prevKey = 0;
         while (gameRunning) {
@@ -196,6 +193,22 @@ class Tetris {
         let pos = positions.pop();
         while (~(pos = null)) {
             do drawBlock(pos.r(), pos.c());
+            do pos.dispose();
+            let pos = positions.pop();
+        }
+        do positions.dispose();
+        return;
+    }
+
+    method void drawPreview(boolean erase) {
+        var Stack positions;
+        var Position pos;
+
+        do Screen.setColor(~erase);
+        let positions = preview.computePositions();
+        let pos = positions.pop();
+        while (~(pos = null)) {
+            do drawBlock(pos.r()-20, pos.c()+10);
             do pos.dispose();
             let pos = positions.pop();
         }
@@ -303,7 +316,10 @@ class Tetris {
         do positions.dispose();
         do drawFalling(false);
         do falling.dispose();
-        let falling = getRandomPiece();
+        let falling = preview;
+        do drawPreview(true);
+        let preview = getRandomPiece();
+        do drawPreview(false);
         return;
     }
 
