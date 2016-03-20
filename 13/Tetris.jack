@@ -1,11 +1,9 @@
 class Tetris {
     field Array board;
-    field int columnCount;
-    field int rowCount;
+    field int columnCount, rowCount;
     field Piece falling;
     field boolean gameRunning;
-    field int gameTime;
-    field String s;
+    field int gameTime, ticksPerAnimation;
 
     static int KEYLEFT;
     static int KEYRIGHT;
@@ -27,6 +25,7 @@ class Tetris {
         let rowCount = 22;
         let board = Array.new(rowCount);
         let gameTime = 0;
+        let ticksPerAnimation = 100;
 
         let i = 0;
         while (i < rowCount) {
@@ -142,12 +141,15 @@ class Tetris {
                     }
                 }
             }
-            if (Util.mod(gameTime, 50) = 0) {
+            if (Util.mod(gameTime, ticksPerAnimation) = 0) {
                 do drawFalling(true);
                 do falling.moveDown();
                 if (collides()) {
                     do handleDownwardCollision();
                 }
+            }
+            if (Util.mod(gameTime, 7000) = 0) {
+                let ticksPerAnimation = ticksPerAnimation - 5;
             }
             do drawFalling(false);
 
