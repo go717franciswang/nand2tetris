@@ -11,7 +11,7 @@ class Random {
     }
 
     function int getNumber(int begin, int end) {
-        let state = Util.mod(7 * state, 16381);
+        let state = Util.mod(7 * state, 4547) + 1;
         return begin + Util.mod(state, end - begin + 1);
     }
 }

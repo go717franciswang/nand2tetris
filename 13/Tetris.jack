@@ -174,14 +174,14 @@ class Tetris {
         let positions = falling.computePositions();
         let pos = positions.pop();
         while (~(pos = null)) {
-            let s = "occupied ";
-            do Output.printString(s);
-            do s.dispose();
-            do Output.printInt(pos.r());
-            let s = "         ";
-            do Output.printString(s);
-            do s.dispose();
-            do Output.println();
+            // let s = "occupied ";
+            // do Output.printString(s);
+            // do s.dispose();
+            // do Output.printInt(pos.r());
+            // let s = "         ";
+            // do Output.printString(s);
+            // do s.dispose();
+            // do Output.println();
 
             if (occupied(pos)) {
                 do pos.dispose();
@@ -221,21 +221,21 @@ class Tetris {
             return false;
         }
         let row = board[pos.r()];
-            let s = "occupied2 ";
-            do Output.printString(s);
-            do s.dispose();
-            do Output.printInt(pos.r());
-            let s = "         ";
-            do Output.printString(s);
-            do s.dispose();
-            do Output.println();
+            // let s = "occupied2 ";
+            // do Output.printString(s);
+            // do s.dispose();
+            // do Output.printInt(pos.r());
+            // let s = "         ";
+            // do Output.printString(s);
+            // do s.dispose();
+            // do Output.println();
 
         return row[pos.c()];
     }
 
     method void handleDownwardCollision() {
-        do Output.printString("Downward collision");
-        do Output.println();
+        // do Output.printString("Downward collision");
+        // do Output.println();
         do falling.moveUp();
         do freeze();
         do wipeConnectedRows();
