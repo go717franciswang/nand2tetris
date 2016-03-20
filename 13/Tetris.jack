@@ -3,7 +3,8 @@ class Tetris {
     field int columnCount, rowCount;
     field Piece falling;
     field boolean gameRunning;
-    field int gameTime, ticksPerAnimation;
+    field int gameTime, ticksPerAnimation, score;
+    field String s;
 
     static int KEYLEFT;
     static int KEYRIGHT;
@@ -26,6 +27,7 @@ class Tetris {
         let board = Array.new(rowCount);
         let gameTime = 0;
         let ticksPerAnimation = 100;
+        let score = 0;
 
         let i = 0;
         while (i < rowCount) {
@@ -67,6 +69,13 @@ class Tetris {
         do Screen.drawLine(191, 15, 191, 255);
         do Screen.drawLine(311, 15, 311, 255);
         do Screen.drawLine(191, 255, 311, 255);
+
+        // score
+        let s = "Score: ";
+        do Output.moveCursor(22, 0);
+        do Output.printString(s);
+        do s.dispose();
+        do Output.printInt(score);
 
         // boxes
         let i = 0;
@@ -148,15 +157,12 @@ class Tetris {
                     do handleDownwardCollision();
                 }
             }
-            if (Util.mod(gameTime, 7000) = 0) {
-                let ticksPerAnimation = ticksPerAnimation - 5;
-            }
             do drawFalling(false);
 
-            // do drawBoard();
             let gameTime = gameTime + 1;
             let prevKey = key;
         }
+        do Output.moveCursor(11, 27);
         do Output.printString("Game Over");
         return;
     }
@@ -224,6 +230,8 @@ class Tetris {
         let r = 0;
         while (r < rowCount) {
             if (isConnected(r)) {
+                let score = score + 10;
+                let ticksPerAnimation = ticksPerAnimation - 4;
                 do wipeRow(r);
             } else {
                 let r = r + 1;
